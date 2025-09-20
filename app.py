@@ -66,7 +66,9 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             email TEXT UNIQUE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            login_count INTEGER DEFAULT 1
         )
     ''')
     
@@ -267,6 +269,34 @@ def logout():
     flash('You have been logged out successfully', 'success')
     return redirect(url_for('index'))
 
+@app.route('/admin')
+def admin_dashboard():
+    """Admin dashboard to view all users who have logged in"""
+    conn = sqlite3.connect('asr_testing.db')
+    cursor = conn.cursor()
+    
+    # Get all users with their login information
+    cursor.execute('''
+        SELECT name, email, created_at, last_login, login_count 
+        FROM qa_users 
+        ORDER BY last_login DESC
+    ''')
+    users = cursor.fetchall()
+    
+    # Get total statistics
+    cursor.execute('SELECT COUNT(*) FROM qa_users')
+    total_users = cursor.fetchone()[0]
+    
+    cursor.execute('SELECT SUM(login_count) FROM qa_users')
+    total_logins = cursor.fetchone()[0] or 0
+    
+    conn.close()
+    
+    return render_template('admin.html', 
+                         users=users, 
+                         total_users=total_users, 
+                         total_logins=total_logins)
+
 @app.route('/login/authorized')
 def authorized():
     """Handle Google OAuth callback"""
@@ -315,16 +345,17 @@ def authorized():
         cursor = conn.cursor()
         
         # Check if user exists, if not create
-        cursor.execute('SELECT id FROM qa_users WHERE email = ?', (email,))
+        cursor.execute('SELECT id, login_count FROM qa_users WHERE email = ?', (email,))
         user = cursor.fetchone()
         
         if not user:
-            cursor.execute('INSERT INTO qa_users (name, email) VALUES (?, ?)', (name, email))
+            cursor.execute('INSERT INTO qa_users (name, email, last_login, login_count) VALUES (?, ?, CURRENT_TIMESTAMP, 1)', (name, email))
             user_id = cursor.lastrowid
         else:
             user_id = user[0]
-            # Update name in case it changed
-            cursor.execute('UPDATE qa_users SET name = ? WHERE email = ?', (name, email))
+            current_login_count = user[1] if user[1] else 0
+            # Update name, last login time, and increment login count
+            cursor.execute('UPDATE qa_users SET name = ?, last_login = CURRENT_TIMESTAMP, login_count = ? WHERE email = ?', (name, current_login_count + 1, email))
         
         conn.commit()
         conn.close()
