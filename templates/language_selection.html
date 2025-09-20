@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Language Selection - ASR Testing Platform{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white text-center">
+                <h4><i class="fas fa-globe"></i> Select Language</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-center mb-4">Choose the language for your ASR testing session:</p>
+                
+                <div class="row">
+                    {% for lang in languages %}
+                    <div class="col-md-6 mb-3">
+                        <a href="{{ url_for('upload_csv', user_id=user_id, language=lang) }}" 
+                           class="btn btn-outline-primary btn-lg w-100 text-start">
+                            <span class="language-flag">
+                                {% if lang == 'hindi' %}🇮🇳{% endif %}
+                                {% if lang == 'odia' %}🇮🇳{% endif %}
+                                {% if lang == 'english' %}🇺🇸{% endif %}
+                                {% if lang == 'gujarati' %}🇮🇳{% endif %}
+                                {% if lang == 'malayalam' %}🇮🇳{% endif %}
+                            </span>
+                            <strong>{{ lang.title() }}</strong>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-language"></i> Supported Languages</h5>
+            </div>
+            <div class="card-body">
+                <p>Currently supported languages for ASR testing:</p>
+                <ul>
+                    <li><strong>Hindi</strong> - हिंदी</li>
+                    <li><strong>Odia</strong> - ଓଡ଼ିଆ</li>
+                    <li><strong>English</strong> - English</li>
+                    <li><strong>Gujarati</strong> - ગુજરાતી</li>
+                    <li><strong>Malayalam</strong> - മലയാളം</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

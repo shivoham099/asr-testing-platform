@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarvam ASR Testing Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .icon.upload { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+        .icon.select { background: linear-gradient(135deg, #4834d4, #686de0); }
+        .icon.test { background: linear-gradient(135deg, #00d2d3, #54a0ff); }
+        .icon.results { background: linear-gradient(135deg, #ff9ff3, #f368e0); }
+
+        .upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #4834d4;
+            background-color: #f8f9ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #4834d4;
+            background-color: #f0f2ff;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4834d4, #686de0);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(72, 52, 212, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+
+        .btn.success {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+        }
+
+        .btn.danger {
+            background: linear-gradient(135deg, #e17055, #d63031);
+        }
+
+        .crop-selection {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .crop-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            transition: background-color 0.2s ease;
+        }
+
+        .crop-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .crop-item.selected {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+        }
+
+        .crop-checkbox {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .testing-interface {
+            grid-column: 1 / -1;
+            display: none;
+        }
+
+        .testing-interface.active {
+            display: block;
+        }
+
+        .word-display {
+            font-size: 4rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            margin: 20px 0;
+            color: #2c3e50;
+            border: 2px solid #dee2e6;
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b894, #00cec9);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .recording {
+            background: linear-gradient(135deg, #e17055, #d63031) !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .results {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+        }
+
+        .result-item.correct {
+            background-color: #d4edda;
+            border-left-color: #28a745;
+        }
+
+        .result-item.incorrect {
+            background-color: #f8d7da;
+            border-left-color: #dc3545;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4834d4;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .tester-info {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #2196f3;
+        }
+
+        .tester-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎤 Sarvam ASR Testing Platform</h1>
+            <p>Test Speech Recognition accuracy for crop names with your team</p>
+        </div>
+
+        <!-- Tester Info -->
+        <div class="tester-info">
+            <h3>👤 Tester Information</h3>
+            <input type="text" id="testerName" class="tester-input" placeholder="Enter your name (e.g., QA Tester 1)">
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Upload CSV -->
+            <div class="card">
+                <h2>
+                    <div class="icon upload">📁</div>
+                    Upload Crop Names
+                </h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📄</div>
+                    <h3>Drop CSV file here or click to browse</h3>
+                    <p>Upload a CSV file with crop names (one per row)</p>
+                    <input type="file" id="csvFile" class="file-input" accept=".csv" />
+                    <button class="btn" onclick="document.getElementById('csvFile').click()">
+                        Choose File
+                    </button>
+                </div>
+                <div id="fileInfo" class="hidden" style="margin-top: 15px; padding: 10px; background: #d4edda; border-radius: 6px;">
+                    <strong>✅ File loaded:</strong> <span id="fileName"></span> (<span id="cropCount"></span> crops)
+                </div>
+            </div>
+
+            <!-- Select Crops -->
+            <div class="card">
+                <h2>
+                    <div class="icon select">🎯</div>
+                    Select Crops to Test
+                </h2>
+                <div id="cropSelection" class="crop-selection">
+                    <p style="text-align: center; color: #6c757d; padding: 20px;">
+                        Upload a CSV file first to see crop options
+                    </p>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn" id="selectAllBtn" disabled>Select All</button>
+                    <button class="btn secondary" id="selectNoneBtn" disabled>Select None</button>
+                    <button class="btn success" id="startTestBtn" disabled>Start Testing</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats hidden" id="statsSection">
+            <div class="stat-card">
+                <div class="stat-number" id="totalCrops">0</div>
+                <div class="stat-label">Total Crops</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedCrops">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="accuracyRate">0%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalRecordings">0</div>
+                <div class="stat-label">Total Recordings</div>
+            </div>
+        </div>
+
+        <!-- Testing Interface -->
+        <div class="testing-interface" id="testingInterface">
+            <div class="card">
+                <h2>
+                    <div class="icon test">🎤</div>
+                    ASR Testing Session
+                </h2>
+                
+                <div class="progress-section">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Progress: <strong id="currentCropIndex">0</strong> / <strong id="totalSelectedCrops">0</strong></span>
+                        <span>Tester: <strong id="currentTesterName">Unknown</strong></span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <div class="word-display" id="wordDisplay">
+                    Click "Start Testing" to begin
+                </div>
+
+                <div class="status" id="status">
+                    Ready to start testing
+                </div>
+
+                <div class="controls">
+                    <button class="btn" id="recordBtn" disabled>🎤 Record (0/5)</button>
+                    <button class="btn secondary" id="nextWordBtn" disabled>➡️ Next Crop</button>
+                    <button class="btn danger" id="stopTestBtn">⏹️ Stop Test</button>
+                </div>
+
+                <div class="results" id="results">
+                    <h3>📊 Test Results</h3>
+                    <div id="resultsList"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn success" id="exportBtn">📥 Export Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let crops = [];
+        let selectedCrops = [];
+        let currentCropIndex = 0;
+        let currentRecordingCount = 0;
+        let isRecording = false;
+        let mediaRecorder;
+        let audioChunks = [];
+        let testResults = [];
+        let testerName = '';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // File upload
+            document.getElementById('csvFile').addEventListener('change', handleFileUpload);
+            document.getElementById('uploadArea').addEventListener('click', () => document.getElementById('csvFile').click());
+            document.getElementById('uploadArea').addEventListener('dragover', handleDragOver);
+            document.getElementById('uploadArea').addEventListener('drop', handleDrop);
+
+            // Crop selection
+            document.getElementById('selectAllBtn').addEventListener('click', selectAllCrops);
+            document.getElementById('selectNoneBtn').addEventListener('click', selectNoneCrops);
+            document.getElementById('startTestBtn').addEventListener('click', startTesting);
+
+            // Testing
+            document.getElementById('recordBtn').addEventListener('click', toggleRecording);
+            document.getElementById('nextWordBtn').addEventListener('click', nextCrop);
+            document.getElementById('stopTestBtn').addEventListener('click', stopTesting);
+            document.getElementById('exportBtn').addEventListener('click', exportResults);
+
+            // Tester name
+            document.getElementById('testerName').addEventListener('input', updateTesterName);
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type === 'text/csv') {
+                processCSVFile(file);
+            } else {
+                alert('Please select a valid CSV file');
+            }
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            document.getElementById('uploadArea').classList.add('dragover');
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            document.getElementById('uploadArea').classList.remove('dragover');
+            const file = event.dataTransfer.files[0];
+            if (file && file.type === 'text/csv') {
+                processCSVFile(file);
+            }
+        }
+
+        function processCSVFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                crops = text.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+                
+                displayCrops();
+                document.getElementById('fileInfo').classList.remove('hidden');
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('cropCount').textContent = crops.length;
+            };
+            reader.readAsText(file);
+        }
+
+        function displayCrops() {
+            const container = document.getElementById('cropSelection');
+            container.innerHTML = '';
+            
+            crops.forEach((crop, index) => {
+                const div = document.createElement('div');
+                div.className = 'crop-item';
+                div.innerHTML = `
+                    <input type="checkbox" class="crop-checkbox" id="crop-${index}" value="${crop}">
+                    <label for="crop-${index}">${crop}</label>
+                `;
+                container.appendChild(div);
+            });
+
+            // Enable buttons
+            document.getElementById('selectAllBtn').disabled = false;
+            document.getElementById('selectNoneBtn').disabled = false;
+            document.getElementById('startTestBtn').disabled = false;
+        }
+
+        function selectAllCrops() {
+            const checkboxes = document.querySelectorAll('.crop-checkbox');
+            checkboxes.forEach(cb => cb.checked = true);
+        }
+
+        function selectNoneCrops() {
+            const checkboxes = document.querySelectorAll('.crop-checkbox');
+            checkboxes.forEach(cb => cb.checked = false);
+        }
+
+        function updateTesterName() {
+            testerName = document.getElementById('testerName').value || 'Unknown Tester';
+            document.getElementById('currentTesterName').textContent = testerName;
+        }
+
+        function startTesting() {
+            // Get selected crops
+            const checkboxes = document.querySelectorAll('.crop-checkbox:checked');
+            selectedCrops = Array.from(checkboxes).map(cb => cb.value);
+            
+            if (selectedCrops.length === 0) {
+                alert('Please select at least one crop to test');
+                return;
+            }
+
+            if (!testerName.trim()) {
+                alert('Please enter your name');
+                return;
+            }
+
+            // Initialize testing
+            currentCropIndex = 0;
+            currentRecordingCount = 0;
+            testResults = [];
+            
+            // Show testing interface
+            document.getElementById('testingInterface').classList.add('active');
+            document.getElementById('statsSection').classList.remove('hidden');
+            
+            // Update stats
+            document.getElementById('totalCrops').textContent = selectedCrops.length;
+            document.getElementById('currentTesterName').textContent = testerName;
+            
+            // Start first crop
+            updateDisplay();
+            document.getElementById('recordBtn').disabled = false;
+            document.getElementById('status').textContent = 'Say the crop name 5 times clearly';
+        }
+
+        function updateDisplay() {
+            if (currentCropIndex < selectedCrops.length) {
+                document.getElementById('wordDisplay').textContent = selectedCrops[currentCropIndex];
+                document.getElementById('currentCropIndex').textContent = currentCropIndex + 1;
+                document.getElementById('totalSelectedCrops').textContent = selectedCrops.length;
+                document.getElementById('recordBtn').textContent = `🎤 Record (${currentRecordingCount}/5)`;
+                
+                const progress = ((currentCropIndex + 1) / selectedCrops.length) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+            } else {
+                document.getElementById('wordDisplay').textContent = '🎉 Test Complete!';
+                document.getElementById('status').textContent = 'All selected crops tested. Export your results.';
+                document.getElementById('recordBtn').disabled = true;
+                document.getElementById('nextWordBtn').disabled = true;
+            }
+        }
+
+        async function toggleRecording() {
+            if (!isRecording) {
+                await startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    processAudio(audioBlob);
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                document.getElementById('recordBtn').classList.add('recording');
+                document.getElementById('recordBtn').textContent = '⏹️ Stop Recording';
+                document.getElementById('status').textContent = 'Recording... Speak clearly!';
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                document.getElementById('status').textContent = 'Error: Could not access microphone';
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                document.getElementById('recordBtn').classList.remove('recording');
+                document.getElementById('status').textContent = 'Processing audio...';
+            }
+        }
+
+        async function processAudio(audioBlob) {
+            // Mock ASR processing (replace with Sarvam API)
+            const mockResponses = [
+                selectedCrops[currentCropIndex], // Correct
+                selectedCrops[currentCropIndex].toLowerCase(), // Correct but lowercase
+                "wrong word", // Wrong
+                selectedCrops[currentCropIndex], // Correct
+                "another wrong" // Wrong
+            ];
+            
+            const mockResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
+            
+            // Simulate API delay
+            setTimeout(() => {
+                const isCorrect = mockResponse.toLowerCase().trim() === selectedCrops[currentCropIndex].toLowerCase().trim();
+                
+                testResults.push({
+                    crop: selectedCrops[currentCropIndex],
+                    expected: selectedCrops[currentCropIndex],
+                    actual: mockResponse,
+                    correct: isCorrect,
+                    timestamp: new Date().toISOString(),
+                    tester: testerName
+                });
+
+                currentRecordingCount++;
+                updateDisplay();
+                updateResults();
+                updateStats();
+
+                if (currentRecordingCount >= 5) {
+                    document.getElementById('recordBtn').disabled = true;
+                    document.getElementById('nextWordBtn').disabled = false;
+                    document.getElementById('status').textContent = '5 recordings complete. Click Next Crop.';
+                } else {
+                    document.getElementById('status').textContent = `Recording ${currentRecordingCount + 1}/5. Say the word again.`;
+                }
+            }, 1000);
+        }
+
+        function updateResults() {
+            const resultsList = document.getElementById('resultsList');
+            const latestResult = testResults[testResults.length - 1];
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result-item ${latestResult.correct ? 'correct' : 'incorrect'}`;
+            resultDiv.innerHTML = `
+                <strong>${latestResult.crop}</strong><br>
+                Expected: ${latestResult.expected}<br>
+                Got: ${latestResult.actual}<br>
+                ${latestResult.correct ? '✅ Correct' : '❌ Incorrect'}
+            `;
+            
+            resultsList.appendChild(resultDiv);
+            resultsList.scrollTop = resultsList.scrollHeight;
+        }
+
+        function updateStats() {
+            const totalRecordings = testResults.length;
+            const correctRecordings = testResults.filter(r => r.correct).length;
+            const accuracy = totalRecordings > 0 ? Math.round((correctRecordings / totalRecordings) * 100) : 0;
+            
+            document.getElementById('completedCrops').textContent = Math.ceil(totalRecordings / 5);
+            document.getElementById('accuracyRate').textContent = accuracy + '%';
+            document.getElementById('totalRecordings').textContent = totalRecordings;
+        }
+
+        function nextCrop() {
+            currentCropIndex++;
+            currentRecordingCount = 0;
+            document.getElementById('recordBtn').disabled = false;
+            document.getElementById('nextWordBtn').disabled = true;
+            document.getElementById('recordBtn').textContent = '🎤 Record (0/5)';
+            document.getElementById('status').textContent = 'Say the crop name 5 times clearly';
+            updateDisplay();
+        }
+
+        function stopTesting() {
+            if (confirm('Are you sure you want to stop testing? Progress will be saved.')) {
+                document.getElementById('testingInterface').classList.remove('active');
+                document.getElementById('status').textContent = 'Testing stopped. You can export results or start a new test.';
+            }
+        }
+
+        function exportResults() {
+            if (testResults.length === 0) {
+                alert('No test results to export');
+                return;
+            }
+
+            const exportData = {
+                tester: testerName,
+                exportDate: new Date().toISOString(),
+                totalCrops: selectedCrops.length,
+                completedCrops: Math.ceil(testResults.length / 5),
+                totalRecordings: testResults.length,
+                accuracy: Math.round((testResults.filter(r => r.correct).length / testResults.length) * 100),
+                results: testResults
+            };
+
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `sarvam-asr-results-${testerName.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

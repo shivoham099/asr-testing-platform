@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Test Results - ASR Testing Platform{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white text-center">
+                <h4><i class="fas fa-chart-bar"></i> Test Results</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <strong>QA Name:</strong> {{ qa_name }}<br>
+                        <strong>Language:</strong> {{ language.title() }}<br>
+                        <strong>Test Date:</strong> {{ created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <a href="{{ url_for('download_csv', session_id=session_id) }}" 
+                           class="btn btn-primary">
+                            <i class="fas fa-download"></i> Download CSV
+                        </a>
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary ms-2">
+                            <i class="fas fa-home"></i> New Test
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Crop Name</th>
+                                <th>Result</th>
+                                <th>Log 1</th>
+                                <th>Log 2</th>
+                                <th>Log 3</th>
+                                <th>Log 4</th>
+                                <th>Log 5</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                            <tr>
+                                <td><strong>{{ result.crop_name }}</strong></td>
+                                <td>
+                                    <span class="badge {% if result.correct_count >= 3 %}bg-success{% elif result.correct_count >= 2 %}bg-warning{% else %}bg-danger{% endif %}">
+                                        {{ result.result_ratio }}
+                                    </span>
+                                </td>
+                                {% for log in result.logs %}
+                                <td>
+                                    {% if log.sentence %}
+                                        <div class="small">
+                                            <strong>Output:</strong> {{ log.sentence[:50] }}{% if log.sentence|length > 50 %}...{% endif %}<br>
+                                            <span class="badge {% if log.detected %}bg-success{% else %}bg-danger{% endif %}">
+                                                {% if log.detected %}✓ Detected{% else %}✗ Not Detected{% endif %}
+                                            </span>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">No recording</span>
+                                    {% endif %}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-pie"></i> Summary Statistics</h5>
+            </div>
+            <div class="card-body">
+                {% set total_crops = results|length %}
+                {% set total_attempts = total_crops * 5 %}
+                {% set total_correct = results|sum(attribute='correct_count') %}
+                {% set accuracy = (total_correct / total_attempts * 100) if total_attempts > 0 else 0 %}
+                
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h3 class="text-primary">{{ total_crops }}</h3>
+                        <small class="text-muted">Crops Tested</small>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="text-success">{{ total_correct }}</h3>
+                        <small class="text-muted">Correct Detections</small>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="text-info">{{ "%.1f"|format(accuracy) }}%</h3>
+                        <small class="text-muted">Overall Accuracy</small>
+                    </div>
+                </div>
+                
+                <div class="progress mt-3">
+                    <div class="progress-bar bg-success" role="progressbar" 
+                         style="width: {{ accuracy }}%">
+                        {{ "%.1f"|format(accuracy) }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Result Legend</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <span class="badge bg-success me-2">✓ Detected</span>
+                    <small>ASR correctly identified the crop name</small>
+                </div>
+                <div class="mb-2">
+                    <span class="badge bg-danger me-2">✗ Not Detected</span>
+                    <small>ASR failed to identify the crop name</small>
+                </div>
+                <div class="mb-2">
+                    <span class="badge bg-success me-2">4/5, 5/5</span>
+                    <small>Good performance (≥80% accuracy)</small>
+                </div>
+                <div class="mb-2">
+                    <span class="badge bg-warning me-2">2/5, 3/5</span>
+                    <small>Moderate performance (40-60% accuracy)</small>
+                </div>
+                <div class="mb-2">
+                    <span class="badge bg-danger me-2">0/5, 1/5</span>
+                    <small>Poor performance (<40% accuracy)</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-download"></i> Download Options</h5>
+            </div>
+            <div class="card-body">
+                <p>The CSV file contains detailed results including:</p>
+                <ul>
+                    <li>QA Name and Language</li>
+                    <li>Crop Name and Overall Result (e.g., 3/5)</li>
+                    <li>All 5 transcription outputs</li>
+                    <li>Keyword detection status for each attempt</li>
+                </ul>
+                <a href="{{ url_for('download_csv', session_id=session_id) }}" 
+                   class="btn btn-primary">
+                    <i class="fas fa-download"></i> Download Complete Results CSV
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

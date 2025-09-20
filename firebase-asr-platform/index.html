@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarvam ASR Testing Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen active">
+            <div class="container">
+                <div class="header">
+                    <h1>🎤 Sarvam ASR Testing Platform</h1>
+                    <p>Quality Assurance Testing for Speech Recognition</p>
+                </div>
+                <div class="login-card">
+                    <h2>Sign in with Google</h2>
+                    <p>Use your Google account to access the testing platform</p>
+                    <button id="googleLoginBtn" class="btn btn-google">
+                        <svg width="20" height="20" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Continue with Google
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Selection Screen -->
+        <div id="projectScreen" class="screen">
+            <div class="container">
+                <div class="header">
+                    <h1>🎤 Sarvam ASR Testing Platform</h1>
+                    <div class="user-info">
+                        <span>Welcome, <strong id="userName">User</strong></span>
+                        <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>📁 Select Project</h2>
+                    <div class="project-grid">
+                        <div class="project-card" data-project="dcs">
+                            <h3>DCS Project</h3>
+                            <p>Crop Survey Voice Agent Testing</p>
+                            <div class="project-stats">
+                                <span>5 Languages</span>
+                                <span>400+ Crops</span>
+                            </div>
+                        </div>
+                        <div class="project-card" data-project="agriculture">
+                            <h3>Agriculture Project</h3>
+                            <p>General Agriculture Terms</p>
+                            <div class="project-stats">
+                                <span>3 Languages</span>
+                                <span>200+ Terms</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Language Selection Screen -->
+        <div id="languageScreen" class="screen">
+            <div class="container">
+                <div class="header">
+                    <h1>🌍 Select Language & Dataset</h1>
+                    <div class="breadcrumb">
+                        <span id="selectedProject">DCS Project</span> → Language Selection
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>📊 Available Languages</h2>
+                    <div class="language-grid" id="languageGrid">
+                        <!-- Languages will be loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Management Screen -->
+        <div id="taskScreen" class="screen">
+            <div class="container">
+                <div class="header">
+                    <h1>🎯 Task Management</h1>
+                    <div class="breadcrumb">
+                        <span id="selectedProject2">DCS Project</span> → <span id="selectedLanguage">Hindi</span> → Task Setup
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>📋 Configure Your Testing Session</h2>
+                    <div class="task-config">
+                        <div class="config-item">
+                            <label>Total Crops Available:</label>
+                            <span id="totalCrops" class="stat">0</span>
+                        </div>
+                        <div class="config-item">
+                            <label>Starting Serial Number:</label>
+                            <input type="number" id="startSerial" min="1" value="1" placeholder="e.g., 1">
+                        </div>
+                        <div class="config-item">
+                            <label>Number of Crops to Test:</label>
+                            <input type="number" id="cropCount" min="1" value="50" placeholder="e.g., 50">
+                        </div>
+                        <div class="config-item">
+                            <label>Your QA Name:</label>
+                            <input type="text" id="qaName" placeholder="Auto-filled from Google profile">
+                        </div>
+                    </div>
+                    <button id="startTestingBtn" class="btn btn-primary">🚀 Start Testing</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testing Screen -->
+        <div id="testingScreen" class="screen">
+            <div class="container">
+                <div class="header">
+                    <h1>🎤 ASR Testing Session</h1>
+                    <div class="session-info">
+                        <span>QA: <strong id="currentQAName">User</strong></span>
+                        <span>Project: <strong id="currentProject">DCS</strong></span>
+                        <span>Language: <strong id="currentLanguage">Hindi</strong></span>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div class="progress-section">
+                    <div class="progress-info">
+                        <span>Crop <strong id="currentCropIndex">1</strong> of <strong id="totalSelectedCrops">50</strong></span>
+                        <span>Recording <strong id="currentRecording">1</strong> of 5</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <!-- Word Display -->
+                <div class="word-display" id="wordDisplay">
+                    Click "Start Testing" to begin
+                </div>
+
+                <!-- Status -->
+                <div class="status" id="status">
+                    Ready to start testing
+                </div>
+
+                <!-- Controls -->
+                <div class="controls">
+                    <button id="recordBtn" class="btn btn-record" disabled>🎤 Record</button>
+                    <button id="nextCropBtn" class="btn btn-secondary" disabled>➡️ Next Crop</button>
+                    <button id="stopTestBtn" class="btn btn-danger">⏹️ Stop Test</button>
+                </div>
+
+                <!-- Results -->
+                <div class="results-section">
+                    <h3>📊 Live Results</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="completedCrops">0</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="accuracyRate">0%</div>
+                            <div class="stat-label">Accuracy</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalRecordings">0</div>
+                            <div class="stat-label">Recordings</div>
+                        </div>
+                    </div>
+                    
+                    <div class="results-list" id="resultsList">
+                        <!-- Results will be added here -->
+                    </div>
+                </div>
+
+                <!-- Export -->
+                <div class="export-section">
+                    <button id="exportBtn" class="btn btn-success">📥 Export Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

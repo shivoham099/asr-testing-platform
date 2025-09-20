@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Login - ASR Testing Platform{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white text-center">
+                <h4><i class="fas fa-sign-in-alt"></i> QA Login</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="mb-3">
+                        <label for="qa_name" class="form-label">Enter Your Name</label>
+                        <input type="text" class="form-control" id="qa_name" name="qa_name" required 
+                               placeholder="Enter your QA name">
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i> Continue
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-muted text-center">
+                <small>Future: Google Login integration will be available</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Platform Information</h5>
+            </div>
+            <div class="card-body">
+                <p>This platform is designed for QA testing of ASR (Automatic Speech Recognition) systems, specifically for DCS crop name recognition.</p>
+                <ul>
+                    <li>Upload a CSV file with crop names</li>
+                    <li>Record audio for each crop name (5 attempts per crop)</li>
+                    <li>Test ASR accuracy using Sarvam API</li>
+                    <li>Download detailed results as CSV</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

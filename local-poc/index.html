@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarvam ASR Testing Platform - POC</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen active">
+            <div class="container">
+                <div class="header">
+                    <h1>🎤 Sarvam ASR Testing Platform</h1>
+                    <p>Quality Assurance Testing for Speech Recognition - POC</p>
+                </div>
+                <div class="login-card">
+                    <h2>Enter Your Details</h2>
+                    <div class="form-group">
+                        <label>QA Tester Name:</label>
+                        <input type="text" id="qaName" placeholder="Enter your name" required>
+                    </div>
+                    <button id="loginBtn" class="btn btn-primary">🚀 Start Testing</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Selection Screen -->
+        <div id="projectScreen" class="screen">
+            <div class="container">
+                <div class="header">
+                    <h1>🎤 Sarvam ASR Testing Platform</h1>
+                    <div class="user-info">
+                        <span>Welcome, <strong id="userName">User</strong></span>
+                        <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>📁 Select Project</h2>
+                    <div class="project-grid">
+                        <div class="project-card" data-project="dcs">
+                            <h3>DCS Project</h3>
+                            <p>Crop Survey Voice Agent Testing</p>
+                            <div class="project-stats">
+                                <span>5 Languages</span>
+                                <span>400+ Crops</span>
+                            </div>
+                        </div>
+                        <div class="project-card" data-project="agriculture">
+                            <h3>Agriculture Project</h3>
+                            <p>General Agriculture Terms</p>
+                            <div class="project-stats">
+                                <span>3 Languages</span>
+                                <span>200+ Terms</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Language Selection Screen -->
+        <div id="languageScreen" class="screen">
+            <div class="container">
+                <div class="header">
+                    <h1>🌍 Select Language & Dataset</h1>
+                    <div class="breadcrumb">
+                        <span id="selectedProject">DCS Project</span> → Language Selection
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>📊 Available Languages</h2>
+                    <div class="language-grid" id="languageGrid">
+                        <div class="language-card" data-language="hindi">
+                            <h3>Hindi</h3>
+                            <p id="hindi-count">18 crops available</p>
+                        </div>
+                        <div class="language-card" data-language="english">
+                            <h3>English</h3>
+                            <p id="english-count">18 crops available</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📁 Upload Crop Names (CSV)</h2>
+                    <div class="upload-section">
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">📄</div>
+                            <h3>Drop CSV file here or click to browse</h3>
+                            <p>Format: serial number, crop code, crop_name, language, project</p>
+                            <input type="file" id="csvFile" class="file-input" accept=".csv" />
+                            <button class="btn btn-secondary" onclick="document.getElementById('csvFile').click()">
+                                Choose CSV File
+                            </button>
+                        </div>
+                        <div id="fileInfo" class="file-info hidden">
+                            <strong>✅ File loaded:</strong> <span id="fileName"></span> (<span id="cropCount"></span> crops)
+                        </div>
+                        <div class="csv-format">
+                            <h4>📋 Expected CSV Format:</h4>
+                            <pre>serial number,crop code,crop_name,language,project
+1,700100,Ash Gourd,पेठा,dcs
+2,700500,Brinjal,बैंगन,dcs
+3,700600,Brussels Sprout,ब्रसेल्स स्प्राउट,dcs
+4,700700,Broccoli,ब्रोकली,dcs
+5,700800,Beetroot,चुकंदर,dcs</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Management Screen -->
+        <div id="taskScreen" class="screen">
+            <div class="container">
+                <div class="header">
+                    <h1>🎯 Task Management</h1>
+                    <div class="breadcrumb">
+                        <span id="selectedProject2">DCS Project</span> → <span id="selectedLanguage">Hindi</span> → Task Setup
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>📋 Configure Your Testing Session</h2>
+                    <div class="task-config">
+                        <div class="config-item">
+                            <label>Total Crops Available:</label>
+                            <span id="totalCrops" class="stat">400</span>
+                        </div>
+                        <div class="config-item">
+                            <label>Starting Serial Number:</label>
+                            <input type="number" id="startSerial" min="1" value="1" placeholder="e.g., 1">
+                        </div>
+                        <div class="config-item">
+                            <label>Number of Crops to Test:</label>
+                            <input type="number" id="cropCount" min="1" value="10" placeholder="e.g., 10">
+                        </div>
+                        <div class="config-item">
+                            <label>Your QA Name:</label>
+                            <input type="text" id="qaNameDisplay" readonly>
+                        </div>
+                    </div>
+                    <button id="startTestingBtn" class="btn btn-primary">🚀 Start Testing</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testing Screen -->
+        <div id="testingScreen" class="screen">
+            <div class="container">
+                <div class="header">
+                    <h1>🎤 ASR Testing Session</h1>
+                    <div class="session-info">
+                        <span>QA: <strong id="currentQAName">User</strong></span>
+                        <span>Project: <strong id="currentProject">DCS</strong></span>
+                        <span>Language: <strong id="currentLanguage">Hindi</strong></span>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div class="progress-section">
+                    <div class="progress-info">
+                        <span>Crop <strong id="currentCropIndex">1</strong> of <strong id="totalSelectedCrops">10</strong></span>
+                        <span>Recording <strong id="currentRecording">1</strong> of 5</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <!-- Word Display -->
+                <div class="word-display" id="wordDisplay">
+                    Click "Start Testing" to begin
+                </div>
+
+                <!-- Status -->
+                <div class="status" id="status">
+                    Ready to start testing
+                </div>
+
+                <!-- Controls -->
+                <div class="controls">
+                    <button id="recordBtn" class="btn btn-record" disabled>🎤 Record</button>
+                    <button id="nextCropBtn" class="btn btn-secondary" disabled>➡️ Next Crop</button>
+                    <button id="stopTestBtn" class="btn btn-danger">⏹️ Stop Test</button>
+                </div>
+
+                <!-- Results -->
+                <div class="results-section">
+                    <h3>📊 Live Results</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="completedCrops">0</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="accuracyRate">0%</div>
+                            <div class="stat-label">Accuracy</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalRecordings">0</div>
+                            <div class="stat-label">Recordings</div>
+                        </div>
+                    </div>
+                    
+                    <div class="results-list" id="resultsList">
+                        <!-- Results will be added here -->
+                    </div>
+                </div>
+
+                <!-- Export -->
+                <div class="export-section">
+                    <button id="exportBtn" class="btn btn-success">📥 Export Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCS ASR Testing Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .screen {
+            display: none;
+            padding: 30px;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 5px solid #007bff;
+        }
+
+        .form-group {
+            margin: 20px 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .language-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .language-card:hover {
+            border-color: #007bff;
+            transform: translateY(-2px);
+        }
+
+        .language-card.selected {
+            border-color: #007bff;
+            background: #e3f2fd;
+        }
+
+        .upload-area {
+            border: 3px dashed #007bff;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            background: #e3f2fd;
+        }
+
+        .upload-area.dragover {
+            background: #e3f2fd;
+            border-color: #0056b3;
+        }
+
+        .crop-display {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .crop-name {
+            font-size: 3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .crop-code {
+            font-size: 1.5em;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .recording-instruction {
+            font-size: 1.2em;
+            color: #495057;
+            margin: 20px 0;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .recording-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .recording-btn {
+            padding: 20px 40px;
+            font-size: 18px;
+            border-radius: 50px;
+        }
+
+        .recording-btn.recording {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .progress {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.3s ease;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .results-table th,
+        .results-table td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .results-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .results-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .incorrect {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .file-info {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .csv-format {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .csv-format pre {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 DCS ASR Testing Platform</h1>
+            <p>Quality Assurance Testing for Crop Name Recognition</p>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen active">
+            <div class="card">
+                <h2>👤 QA Login</h2>
+                <div class="form-group">
+                    <label for="qaName">QA Name:</label>
+                    <input type="text" id="qaName" placeholder="Enter your name" required>
+                </div>
+                <button class="btn btn-primary" onclick="login()">Login</button>
+                <p style="margin-top: 15px; color: #6c757d;">
+                    <small>Google login will be added later</small>
+                </p>
+            </div>
+        </div>
+
+        <!-- Language Selection Screen -->
+        <div id="languageScreen" class="screen">
+            <div class="card">
+                <h2>🌐 Select Language</h2>
+                <div class="language-grid">
+                    <div class="language-card" data-language="hindi" onclick="selectLanguage('hindi')">
+                        <h3>Hindi</h3>
+                        <p id="hindi-count">0 crops available</p>
+                    </div>
+                    <div class="language-card" data-language="english" onclick="selectLanguage('english')">
+                        <h3>English</h3>
+                        <p id="english-count">0 crops available</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📁 Upload Crop Names (CSV)</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div style="font-size: 3em; margin-bottom: 20px;">📄</div>
+                    <h3>Drop CSV file here or click to browse</h3>
+                    <p>Format: serial_number, crop_code, crop_name, language, project</p>
+                    <input type="file" id="csvFile" class="hidden" accept=".csv" />
+                    <button class="btn btn-secondary" onclick="document.getElementById('csvFile').click()">
+                        Choose CSV File
+                    </button>
+                </div>
+                <div id="fileInfo" class="file-info hidden">
+                    <strong>✅ File loaded:</strong> <span id="fileName"></span> (<span id="cropCount"></span> crops)
+                </div>
+                <div class="csv-format">
+                    <h4>📋 Expected CSV Format:</h4>
+                    <pre>serial_number,crop_code,crop_name,language,project
+1,700100,पेठा,hindi,dcs
+2,700500,बैंगन,hindi,dcs
+3,700600,Brussels Sprout,english,dcs
+4,700700,Broccoli,english,dcs</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testing Screen -->
+        <div id="testingScreen" class="screen">
+            <div class="card">
+                <h2>🎯 ASR Testing Session</h2>
+                <div class="progress">
+                    <div>Progress: <span id="progressText">0/0</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="crop-display">
+                    <div class="crop-name" id="cropName">Ready to start testing</div>
+                    <div class="crop-code" id="cropCode"></div>
+                </div>
+
+                <div class="recording-instruction">
+                    <strong>📝 Instructions:</strong> Use the crop name in a sentence. For example: "I am growing <strong id="cropNameInSentence">पेठा</strong> in my field."
+                </div>
+
+                <div class="recording-controls">
+                    <button id="recordBtn" class="btn btn-danger recording-btn" onclick="toggleRecording()">
+                        🎤 Start Recording
+                    </button>
+                    <button id="nextBtn" class="btn btn-success recording-btn" onclick="nextRecording()" disabled>
+                        ➡️ Next Recording
+                    </button>
+                    <button id="stopBtn" class="btn btn-secondary recording-btn" onclick="stopTest()" disabled>
+                        ⏹️ Stop Test
+                    </button>
+                </div>
+
+                <div id="recordingStatus" class="hidden">
+                    <div style="text-align: center; padding: 20px; background: #fff3cd; border-radius: 8px;">
+                        <h3>🔴 Recording...</h3>
+                        <p>Speak your sentence with the crop name</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="screen">
+            <div class="card">
+                <h2>📊 Test Results</h2>
+                <div id="summaryResults"></div>
+                <button class="btn btn-primary" onclick="downloadResults()">📥 Download CSV Results</button>
+                <button class="btn btn-secondary" onclick="startNewTest()">🔄 Start New Test</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ASRTestingPlatform {
+            constructor() {
+                this.currentUser = null;
+                this.selectedLanguage = null;
+                this.uploadedCrops = [];
+                this.currentCrops = [];
+                this.currentCropIndex = 0;
+                this.currentRecordingIndex = 0;
+                this.testResults = [];
+                this.isRecording = false;
+                this.mediaRecorder = null;
+                this.audioChunks = [];
+                this.isTestActive = false;
+
+                // Default crop data
+                this.cropData = {
+                    hindi: [
+                        { serial: 1, code: '700100', name: 'पेठा', language: 'hindi', project: 'dcs' },
+                        { serial: 2, code: '700500', name: 'बैंगन', language: 'hindi', project: 'dcs' },
+                        { serial: 3, code: '700600', name: 'ब्रसेल्स स्प्राउट', language: 'hindi', project: 'dcs' },
+                        { serial: 4, code: '700700', name: 'ब्रोकली', language: 'hindi', project: 'dcs' },
+                        { serial: 5, code: '700800', name: 'चुकंदर', language: 'hindi', project: 'dcs' },
+                        { serial: 6, code: '700900', name: 'करेला', language: 'hindi', project: 'dcs' },
+                        { serial: 7, code: '701000', name: 'पत्ता गोभी', language: 'hindi', project: 'dcs' },
+                        { serial: 8, code: '701100', name: 'फूल गोभी', language: 'hindi', project: 'dcs' },
+                        { serial: 9, code: '701200', name: 'गाजर', language: 'hindi', project: 'dcs' },
+                        { serial: 10, code: '701300', name: 'चीनी मेलो', language: 'hindi', project: 'dcs' }
+                    ],
+                    english: [
+                        { serial: 1, code: '700100', name: 'Ash Gourd', language: 'english', project: 'dcs' },
+                        { serial: 2, code: '700500', name: 'Brinjal', language: 'english', project: 'dcs' },
+                        { serial: 3, code: '700600', name: 'Brussels Sprout', language: 'english', project: 'dcs' },
+                        { serial: 4, code: '700700', name: 'Broccoli', language: 'english', project: 'dcs' },
+                        { serial: 5, code: '700800', name: 'Beetroot', language: 'english', project: 'dcs' },
+                        { serial: 6, code: '700900', name: 'Bitter Gourd', language: 'english', project: 'dcs' },
+                        { serial: 7, code: '701000', name: 'Cabbage', language: 'english', project: 'dcs' },
+                        { serial: 8, code: '701100', name: 'Cauliflower', language: 'english', project: 'dcs' },
+                        { serial: 9, code: '701200', name: 'Carrot', language: 'english', project: 'dcs' },
+                        { serial: 10, code: '701300', name: 'Chinese Mellow', language: 'english', project: 'dcs' }
+                    ]
+                };
+
+                this.init();
+            }
+
+            init() {
+                // CSV upload
+                document.getElementById('csvFile').addEventListener('change', (e) => this.handleFileUpload(e));
+                document.getElementById('uploadArea').addEventListener('click', () => document.getElementById('csvFile').click());
+                document.getElementById('uploadArea').addEventListener('dragover', (e) => this.handleDragOver(e));
+                document.getElementById('uploadArea').addEventListener('drop', (e) => this.handleDrop(e));
+
+                // Update language counts
+                this.updateLanguageCounts();
+            }
+
+            login() {
+                const qaName = document.getElementById('qaName').value.trim();
+                if (!qaName) {
+                    alert('Please enter your QA name');
+                    return;
+                }
+
+                this.currentUser = { name: qaName };
+                this.showScreen('languageScreen');
+            }
+
+            selectLanguage(language) {
+                this.selectedLanguage = language;
+                
+                // Load crops for selected language
+                if (this.uploadedCrops && this.uploadedCrops.length > 0) {
+                    this.currentCrops = this.uploadedCrops
+                        .filter(crop => crop.language === language)
+                        .sort((a, b) => a.serial - b.serial);
+                } else {
+                    this.currentCrops = this.cropData[language] || [];
+                }
+
+                if (this.currentCrops.length === 0) {
+                    alert(`No crops found for ${language} language. Please upload a CSV or select a different language.`);
+                    return;
+                }
+
+                // Update UI
+                document.querySelectorAll('.language-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                document.querySelector(`[data-language="${language}"]`).classList.add('selected');
+
+                // Start testing
+                this.startTesting();
+            }
+
+            startTesting() {
+                this.currentCropIndex = 0;
+                this.currentRecordingIndex = 0;
+                this.testResults = [];
+                this.isTestActive = true;
+
+                this.showScreen('testingScreen');
+                this.showCurrentCrop();
+                this.updateProgress();
+            }
+
+            showCurrentCrop() {
+                const crop = this.currentCrops[this.currentCropIndex];
+                document.getElementById('cropName').textContent = crop.name;
+                document.getElementById('cropCode').textContent = `Code: ${crop.code}`;
+                document.getElementById('cropNameInSentence').textContent = crop.name;
+            }
+
+            updateProgress() {
+                const totalRecordings = this.currentCrops.length * 5;
+                const completedRecordings = this.currentCropIndex * 5 + this.currentRecordingIndex;
+                const progress = (completedRecordings / totalRecordings) * 100;
+                
+                document.getElementById('progressText').textContent = `${completedRecordings}/${totalRecordings}`;
+                document.getElementById('progressFill').style.width = `${progress}%`;
+            }
+
+            async toggleRecording() {
+                if (!this.isRecording) {
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        this.mediaRecorder = new MediaRecorder(stream);
+                        this.audioChunks = [];
+
+                        this.mediaRecorder.ondataavailable = event => {
+                            this.audioChunks.push(event.data);
+                        };
+
+                        this.mediaRecorder.onstop = () => {
+                            const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+                            this.processAudio(audioBlob);
+                            stream.getTracks().forEach(track => track.stop());
+                        };
+
+                        this.mediaRecorder.start();
+                        this.isRecording = true;
+                        
+                        document.getElementById('recordBtn').textContent = '⏹️ Stop Recording';
+                        document.getElementById('recordBtn').classList.add('recording');
+                        document.getElementById('recordingStatus').classList.remove('hidden');
+                    } catch (error) {
+                        alert('Error accessing microphone: ' + error.message);
+                    }
+                } else {
+                    this.mediaRecorder.stop();
+                    this.isRecording = false;
+                    
+                    document.getElementById('recordBtn').textContent = '🎤 Start Recording';
+                    document.getElementById('recordBtn').classList.remove('recording');
+                    document.getElementById('recordingStatus').classList.add('hidden');
+                }
+            }
+
+            async processAudio(audioBlob) {
+                // TODO: Integrate with Sarvam ASR API
+                // For now, using mock ASR results
+                const crop = this.currentCrops[this.currentCropIndex];
+                const mockResults = [
+                    `I am growing ${crop.name} in my field`,
+                    `The farmer planted ${crop.name} this season`,
+                    `We harvested ${crop.name} yesterday`,
+                    `This ${crop.name} looks healthy`,
+                    `I need to water the ${crop.name} plants`
+                ];
+
+                const sentence = mockResults[Math.floor(Math.random() * mockResults.length)];
+                const keyword = this.extractKeyword(sentence, crop.name);
+                const isCorrect = keyword === crop.name;
+
+                const result = {
+                    qaName: this.currentUser.name,
+                    cropName: crop.name,
+                    cropCode: crop.code,
+                    recordingNumber: this.currentRecordingIndex + 1,
+                    sentence: sentence,
+                    keyword: keyword,
+                    correct: isCorrect,
+                    timestamp: new Date().toISOString()
+                };
+
+                this.testResults.push(result);
+                this.nextRecording();
+            }
+
+            extractKeyword(sentence, expectedKeyword) {
+                // Simple keyword extraction - in real implementation, use NLP
+                const words = sentence.toLowerCase().split(' ');
+                const expectedLower = expectedKeyword.toLowerCase();
+                
+                for (let word of words) {
+                    if (word.includes(expectedLower) || expectedLower.includes(word)) {
+                        return expectedKeyword;
+                    }
+                }
+                
+                return 'Not found';
+            }
+
+            nextRecording() {
+                this.currentRecordingIndex++;
+                
+                if (this.currentRecordingIndex >= 5) {
+                    // Move to next crop
+                    this.currentCropIndex++;
+                    this.currentRecordingIndex = 0;
+                    
+                    if (this.currentCropIndex >= this.currentCrops.length) {
+                        // Test complete
+                        this.stopTest();
+                        return;
+                    }
+                }
+                
+                this.showCurrentCrop();
+                this.updateProgress();
+                document.getElementById('nextBtn').disabled = true;
+            }
+
+            stopTest() {
+                this.isTestActive = false;
+                this.isRecording = false;
+                
+                if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+                    this.mediaRecorder.stop();
+                }
+                
+                this.showResults();
+            }
+
+            showResults() {
+                this.showScreen('resultsScreen');
+                
+                // Calculate summary
+                const totalRecordings = this.testResults.length;
+                const correctRecordings = this.testResults.filter(r => r.correct).length;
+                const accuracy = totalRecordings > 0 ? Math.round((correctRecordings / totalRecordings) * 100) : 0;
+                
+                // Group results by crop
+                const cropResults = {};
+                this.testResults.forEach(result => {
+                    if (!cropResults[result.cropName]) {
+                        cropResults[result.cropName] = [];
+                    }
+                    cropResults[result.cropName].push(result);
+                });
+                
+                let summaryHTML = `
+                    <h3>📈 Test Summary</h3>
+                    <p><strong>Total Recordings:</strong> ${totalRecordings}</p>
+                    <p><strong>Correct:</strong> ${correctRecordings}</p>
+                    <p><strong>Accuracy:</strong> ${accuracy}%</p>
+                    <hr>
+                    <h3>📋 Detailed Results</h3>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Crop Name</th>
+                                <th>Result</th>
+                                <th>Log 1</th>
+                                <th>Log 2</th>
+                                <th>Log 3</th>
+                                <th>Log 4</th>
+                                <th>Log 5</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                Object.keys(cropResults).forEach(cropName => {
+                    const results = cropResults[cropName];
+                    const correctCount = results.filter(r => r.correct).length;
+                    const resultText = `${correctCount}/5`;
+                    
+                    summaryHTML += `
+                        <tr>
+                            <td>${cropName}</td>
+                            <td class="${correctCount === 5 ? 'correct' : 'incorrect'}">${resultText}</td>
+                    `;
+                    
+                    for (let i = 0; i < 5; i++) {
+                        const result = results[i] || { sentence: 'N/A', keyword: 'N/A', correct: false };
+                        summaryHTML += `
+                            <td>
+                                <strong>Sentence:</strong> ${result.sentence}<br>
+                                <strong>Keyword:</strong> <span class="${result.correct ? 'correct' : 'incorrect'}">${result.keyword}</span>
+                            </td>
+                        `;
+                    }
+                    
+                    summaryHTML += '</tr>';
+                });
+                
+                summaryHTML += '</tbody></table>';
+                document.getElementById('summaryResults').innerHTML = summaryHTML;
+            }
+
+            downloadResults() {
+                // Generate CSV
+                const csvContent = this.generateCSV();
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `asr_test_results_${this.currentUser.name}_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }
+
+            generateCSV() {
+                // Group results by crop
+                const cropResults = {};
+                this.testResults.forEach(result => {
+                    if (!cropResults[result.cropName]) {
+                        cropResults[result.cropName] = [];
+                    }
+                    cropResults[result.cropName].push(result);
+                });
+                
+                let csv = 'QA_NAME,CROP_NAME,RESULT(⅗),LOG1_SENTENCE,LOG1_KEYWORD,LOG2_SENTENCE,LOG2_KEYWORD,LOG3_SENTENCE,LOG3_KEYWORD,LOG4_SENTENCE,LOG4_KEYWORD,LOG5_SENTENCE,LOG5_KEYWORD\n';
+                
+                Object.keys(cropResults).forEach(cropName => {
+                    const results = cropResults[cropName];
+                    const correctCount = results.filter(r => r.correct).length;
+                    const resultText = `${correctCount}/5`;
+                    
+                    let row = `${this.currentUser.name},${cropName},${resultText}`;
+                    
+                    for (let i = 0; i < 5; i++) {
+                        const result = results[i] || { sentence: 'N/A', keyword: 'N/A' };
+                        row += `,"${result.sentence}","${result.keyword}"`;
+                    }
+                    
+                    csv += row + '\n';
+                });
+                
+                return csv;
+            }
+
+            startNewTest() {
+                this.currentUser = null;
+                this.selectedLanguage = null;
+                this.uploadedCrops = [];
+                this.currentCrops = [];
+                this.currentCropIndex = 0;
+                this.currentRecordingIndex = 0;
+                this.testResults = [];
+                this.isRecording = false;
+                this.isTestActive = false;
+                
+                document.getElementById('qaName').value = '';
+                document.querySelectorAll('.language-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                document.getElementById('fileInfo').classList.add('hidden');
+                
+                this.showScreen('loginScreen');
+            }
+
+            showScreen(screenId) {
+                document.querySelectorAll('.screen').forEach(screen => {
+                    screen.classList.remove('active');
+                });
+                document.getElementById(screenId).classList.add('active');
+            }
+
+            updateLanguageCounts() {
+                Object.keys(this.cropData).forEach(lang => {
+                    const countElement = document.getElementById(`${lang}-count`);
+                    if (countElement) {
+                        countElement.textContent = `${this.cropData[lang].length} crops available`;
+                    }
+                });
+            }
+
+            handleFileUpload(event) {
+                const file = event.target.files[0];
+                if (file && file.type === 'text/csv') {
+                    this.processCSVFile(file);
+                }
+            }
+
+            handleDragOver(event) {
+                event.preventDefault();
+                event.currentTarget.classList.add('dragover');
+            }
+
+            handleDrop(event) {
+                event.preventDefault();
+                event.currentTarget.classList.remove('dragover');
+                const file = event.dataTransfer.files[0];
+                if (file && file.type === 'text/csv') {
+                    this.processCSVFile(file);
+                }
+            }
+
+            processCSVFile(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const text = e.target.result;
+                        const lines = text.split('\n').filter(line => line.trim());
+
+                        if (lines.length < 2) {
+                            alert('CSV file must have at least a header and one data row');
+                            return;
+                        }
+
+                        const header = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/[^a-z0-9_]/g, ''));
+                        const requiredColumns = ['serialnumber', 'cropcode', 'cropname', 'language', 'project'];
+                        
+                        const columnMapping = {
+                            'serialnumber': ['serial_number', 'serialnumber', 'serial'],
+                            'cropcode': ['crop_code', 'cropcode', 'cropcode'],
+                            'cropname': ['crop_name', 'cropname', 'crop_name'],
+                            'language': ['language', 'lang'],
+                            'project': ['project', 'proj']
+                        };
+                        
+                        const missingColumns = [];
+                        const foundColumns = {};
+                        
+                        requiredColumns.forEach(requiredCol => {
+                            const variations = columnMapping[requiredCol];
+                            const found = variations.some(variation => header.includes(variation));
+                            if (!found) {
+                                missingColumns.push(requiredCol);
+                            } else {
+                                const actualCol = variations.find(variation => header.includes(variation));
+                                foundColumns[requiredCol] = header.indexOf(actualCol);
+                            }
+                        });
+                        
+                        if (missingColumns.length > 0) {
+                            alert(`Missing required columns: ${missingColumns.join(', ')}\n\nFound columns: ${header.join(', ')}`);
+                            return;
+                        }
+
+                        const crops = [];
+                        const languageCounts = {};
+
+                        for (let i = 1; i < lines.length; i++) {
+                            const values = lines[i].split(',').map(v => v.trim());
+                            if (values.length >= 5) {
+                                const crop = {
+                                    serial: parseInt(values[foundColumns.serialnumber]) || i,
+                                    code: values[foundColumns.cropcode],
+                                    name: values[foundColumns.cropname],
+                                    language: values[foundColumns.language].toLowerCase(),
+                                    project: values[foundColumns.project].toLowerCase()
+                                };
+
+                                crops.push(crop);
+
+                                if (!languageCounts[crop.language]) {
+                                    languageCounts[crop.language] = 0;
+                                }
+                                languageCounts[crop.language]++;
+                            }
+                        }
+
+                        this.uploadedCrops = crops;
+
+                        Object.keys(languageCounts).forEach(lang => {
+                            const countElement = document.getElementById(`${lang}-count`);
+                            if (countElement) {
+                                countElement.textContent = `${languageCounts[lang]} crops available`;
+                            }
+                        });
+
+                        document.getElementById('fileInfo').classList.remove('hidden');
+                        document.getElementById('fileName').textContent = file.name;
+                        document.getElementById('cropCount').textContent = crops.length;
+
+                        alert(`✅ Successfully loaded ${crops.length} crops from CSV file!`);
+
+                    } catch (error) {
+                        console.error('Error processing CSV:', error);
+                        alert('Error processing CSV file. Please check the format.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // Global functions
+        let platform;
+
+        function login() {
+            platform.login();
+        }
+
+        function selectLanguage(language) {
+            platform.selectLanguage(language);
+        }
+
+        function toggleRecording() {
+            platform.toggleRecording();
+        }
+
+        function nextRecording() {
+            platform.nextRecording();
+        }
+
+        function stopTest() {
+            platform.stopTest();
+        }
+
+        function downloadResults() {
+            platform.downloadResults();
+        }
+
+        function startNewTest() {
+            platform.startNewTest();
+        }
+
+        // Initialize platform
+        document.addEventListener('DOMContentLoaded', () => {
+            platform = new ASRTestingPlatform();
+        });
+    </script>
+</body>
+</html>

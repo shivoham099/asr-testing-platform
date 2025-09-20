@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASR Crop Testing Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .word-display {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress {
+            margin: 20px 0;
+            font-size: 1.2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .controls {
+            margin: 30px 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .recording {
+            background: linear-gradient(45deg, #FF4757, #FF3838) !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .status {
+            margin: 20px 0;
+            font-size: 1.1rem;
+            min-height: 30px;
+        }
+
+        .results {
+            margin-top: 30px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        .correct {
+            border-left: 4px solid #4CAF50;
+        }
+
+        .incorrect {
+            border-left: 4px solid #F44336;
+        }
+
+        .login-section {
+            margin-bottom: 30px;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌾 ASR Crop Testing</h1>
+        <p class="subtitle">Test Speech Recognition for Crop Names</p>
+
+        <!-- Login Section -->
+        <div id="loginSection" class="login-section">
+            <button id="googleLogin" class="btn">🔐 Login with Google</button>
+        </div>
+
+        <!-- User Info -->
+        <div id="userInfo" class="user-info hidden">
+            <p>Welcome, <span id="userName"></span>!</p>
+            <button id="logout" class="btn">Logout</button>
+        </div>
+
+        <!-- Main Testing Interface -->
+        <div id="testingInterface" class="hidden">
+            <div class="progress">
+                <div>Progress: <span id="currentIndex">0</span> / <span id="totalCrops">400</span></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <div class="word-display" id="wordDisplay">
+                Click "Start Test" to begin
+            </div>
+
+            <div class="status" id="status">
+                Ready to start testing
+            </div>
+
+            <div class="controls">
+                <button id="startTest" class="btn">🚀 Start Test</button>
+                <button id="recordBtn" class="btn" disabled>🎤 Record (0/5)</button>
+                <button id="nextWord" class="btn" disabled>➡️ Next Word</button>
+                <button id="exportResults" class="btn">📊 Export Results</button>
+            </div>
+
+            <div class="results" id="results">
+                <h3>Test Results:</h3>
+                <div id="resultsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentCropIndex = 0;
+        let currentRecordingCount = 0;
+        let isRecording = false;
+        let mediaRecorder;
+        let audioChunks = [];
+        let testResults = [];
+        let crops = [];
+        let user = null;
+
+        // Sample crop data (you'll replace this with your 400 crops)
+        const sampleCrops = [
+            "ज्वार", "चावल", "मक्का", "गेहूं", "बाजरा", "रागी", "अरहर", "चना", 
+            "मूंग", "उड़द", "सोयाबीन", "मूंगफली", "तिल", "सरसों", "सूरजमुखी",
+            "कपास", "गन्ना", "आलू", "प्याज", "टमाटर", "बैंगन", "मिर्च", "भिंडी"
+        ];
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            crops = sampleCrops; // In real app, load from your 400 crops
+            document.getElementById('totalCrops').textContent = crops.length;
+            
+            // Event listeners
+            document.getElementById('googleLogin').addEventListener('click', handleGoogleLogin);
+            document.getElementById('logout').addEventListener('click', handleLogout);
+            document.getElementById('startTest').addEventListener('click', startTest);
+            document.getElementById('recordBtn').addEventListener('click', toggleRecording);
+            document.getElementById('nextWord').addEventListener('click', nextWord);
+            document.getElementById('exportResults').addEventListener('click', exportResults);
+        });
+
+        // Mock Google Login (replace with real Google OAuth)
+        function handleGoogleLogin() {
+            // Simulate login
+            user = {
+                name: "QA Tester",
+                email: "tester@sarvam.ai"
+            };
+            
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('testingInterface').classList.remove('hidden');
+            document.getElementById('userName').textContent = user.name;
+        }
+
+        function handleLogout() {
+            user = null;
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+            document.getElementById('testingInterface').classList.add('hidden');
+        }
+
+        function startTest() {
+            currentCropIndex = 0;
+            currentRecordingCount = 0;
+            testResults = [];
+            updateDisplay();
+            document.getElementById('startTest').disabled = true;
+            document.getElementById('recordBtn').disabled = false;
+            document.getElementById('status').textContent = 'Say the word 5 times clearly';
+        }
+
+        function updateDisplay() {
+            if (currentCropIndex < crops.length) {
+                document.getElementById('wordDisplay').textContent = crops[currentCropIndex];
+                document.getElementById('currentIndex').textContent = currentCropIndex + 1;
+                document.getElementById('recordBtn').textContent = `🎤 Record (${currentRecordingCount}/5)`;
+                
+                const progress = ((currentCropIndex + 1) / crops.length) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+            } else {
+                document.getElementById('wordDisplay').textContent = 'Test Complete!';
+                document.getElementById('status').textContent = 'All crops tested. Export your results.';
+                document.getElementById('recordBtn').disabled = true;
+                document.getElementById('nextWord').disabled = true;
+            }
+        }
+
+        async function toggleRecording() {
+            if (!isRecording) {
+                await startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    processAudio(audioBlob);
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                document.getElementById('recordBtn').classList.add('recording');
+                document.getElementById('recordBtn').textContent = '⏹️ Stop Recording';
+                document.getElementById('status').textContent = 'Recording... Speak clearly!';
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                document.getElementById('status').textContent = 'Error: Could not access microphone';
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                document.getElementById('recordBtn').classList.remove('recording');
+                document.getElementById('status').textContent = 'Processing audio...';
+            }
+        }
+
+        async function processAudio(audioBlob) {
+            // Mock ASR processing (replace with Sarvam API call)
+            const mockResponses = [
+                crops[currentCropIndex], // Correct
+                crops[currentCropIndex].toLowerCase(), // Correct but lowercase
+                "wrong word", // Wrong
+                crops[currentCropIndex], // Correct
+                "another wrong" // Wrong
+            ];
+            
+            const mockResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
+            
+            // Simulate API delay
+            setTimeout(() => {
+                const isCorrect = mockResponse.toLowerCase() === crops[currentCropIndex].toLowerCase();
+                
+                testResults.push({
+                    crop: crops[currentCropIndex],
+                    expected: crops[currentCropIndex],
+                    actual: mockResponse,
+                    correct: isCorrect,
+                    timestamp: new Date().toISOString()
+                });
+
+                currentRecordingCount++;
+                updateDisplay();
+                updateResults();
+
+                if (currentRecordingCount >= 5) {
+                    document.getElementById('recordBtn').disabled = true;
+                    document.getElementById('nextWord').disabled = false;
+                    document.getElementById('status').textContent = '5 recordings complete. Click Next Word.';
+                } else {
+                    document.getElementById('status').textContent = `Recording ${currentRecordingCount + 1}/5. Say the word again.`;
+                }
+            }, 1000);
+        }
+
+        function updateResults() {
+            const resultsList = document.getElementById('resultsList');
+            const latestResult = testResults[testResults.length - 1];
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result-item ${latestResult.correct ? 'correct' : 'incorrect'}`;
+            resultDiv.innerHTML = `
+                <strong>${latestResult.crop}</strong><br>
+                Expected: ${latestResult.expected}<br>
+                Got: ${latestResult.actual}<br>
+                ${latestResult.correct ? '✅ Correct' : '❌ Incorrect'}
+            `;
+            
+            resultsList.appendChild(resultDiv);
+            resultsList.scrollTop = resultsList.scrollHeight;
+        }
+
+        function nextWord() {
+            currentCropIndex++;
+            currentRecordingCount = 0;
+            document.getElementById('recordBtn').disabled = false;
+            document.getElementById('nextWord').disabled = true;
+            document.getElementById('recordBtn').textContent = '🎤 Record (0/5)';
+            document.getElementById('status').textContent = 'Say the word 5 times clearly';
+            updateDisplay();
+        }
+
+        function exportResults() {
+            const dataStr = JSON.stringify(testResults, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `asr-test-results-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

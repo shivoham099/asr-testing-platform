@@ -1,0 +1,34 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow authenticated users to read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow authenticated users to read projects and languages
+    match /projects/{projectId} {
+      allow read: if request.auth != null;
+      
+      match /languages/{languageId} {
+        allow read: if request.auth != null;
+        
+        match /crops/{cropId} {
+          allow read: if request.auth != null;
+        }
+      }
+    }
+    
+    // Allow authenticated users to write test results
+    match /testResults/{resultId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+    }
+    
+    // Allow authenticated users to write exports
+    match /exports/{exportId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+    }
+  }
+}

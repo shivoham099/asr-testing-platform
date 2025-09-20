@@ -1,0 +1,51 @@
+serial_number,crop_code,crop_name,language,project
+1,JWAR,ज्वार,hindi,dcs
+2,RICE,चावल,hindi,dcs
+3,MAIZE,मक्का,hindi,dcs
+4,WHEAT,गेहूं,hindi,dcs
+5,PEARL_MILLET,बाजरा,hindi,dcs
+6,FINGER_MILLET,रागी,hindi,dcs
+7,PIGEON_PEA,अरहर,hindi,dcs
+8,CHICKPEA,चना,hindi,dcs
+9,GREEN_GRAM,मूंग,hindi,dcs
+10,BLACK_GRAM,उड़द,hindi,dcs
+11,SOYBEAN,सोयाबीन,hindi,dcs
+12,GROUNDNUT,मूंगफली,hindi,dcs
+13,SESAME,तिल,hindi,dcs
+14,MUSTARD,सरसों,hindi,dcs
+15,SUNFLOWER,सूरजमुखी,hindi,dcs
+16,COTTON,कपास,hindi,dcs
+17,SUGARCANE,गन्ना,hindi,dcs
+18,POTATO,आलू,hindi,dcs
+19,ONION,प्याज,hindi,dcs
+20,TOMATO,टमाटर,hindi,dcs
+21,BRINJAL,बैंगन,hindi,dcs
+22,CHILI,मिर्च,hindi,dcs
+23,OKRA,भिंडी,hindi,dcs
+24,PUMPKIN,कद्दू,hindi,dcs
+25,CUCUMBER,खीरा,hindi,dcs
+26,RICE,Rice,english,dcs
+27,SORGHUM,Sorghum,english,dcs
+28,MAIZE,Maize,english,dcs
+29,WHEAT,Wheat,english,dcs
+30,PEARL_MILLET,Pearl Millet,english,dcs
+31,FINGER_MILLET,Finger Millet,english,dcs
+32,PIGEON_PEA,Pigeon Pea,english,dcs
+33,CHICKPEA,Chickpea,english,dcs
+34,GREEN_GRAM,Green Gram,english,dcs
+35,BLACK_GRAM,Black Gram,english,dcs
+36,SOYBEAN,Soybean,english,dcs
+37,GROUNDNUT,Groundnut,english,dcs
+38,SESAME,Sesame,english,dcs
+39,MUSTARD,Mustard,english,dcs
+40,SUNFLOWER,Sunflower,english,dcs
+41,COTTON,Cotton,english,dcs
+42,SUGARCANE,Sugarcane,english,dcs
+43,POTATO,Potato,english,dcs
+44,ONION,Onion,english,dcs
+45,TOMATO,Tomato,english,dcs
+46,BRINJAL,Brinjal,english,dcs
+47,CHILI,Chili,english,dcs
+48,OKRA,Okra,english,dcs
+49,PUMPKIN,Pumpkin,english,dcs
+50,CUCUMBER,Cucumber,english,dcs

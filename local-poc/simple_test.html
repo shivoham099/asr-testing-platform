@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASR Testing - Simple Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .crop-display {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .crop-name {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #495057;
+            margin: 0;
+        }
+        .crop-code {
+            font-size: 1.2em;
+            color: #6c757d;
+            margin-top: 10px;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .record-btn {
+            background: #dc3545;
+            color: white;
+        }
+        .record-btn:hover {
+            background: #c82333;
+        }
+        .record-btn.recording {
+            background: #28a745;
+            animation: pulse 1s infinite;
+        }
+        .next-btn {
+            background: #007bff;
+            color: white;
+        }
+        .next-btn:hover {
+            background: #0056b3;
+        }
+        .stop-btn {
+            background: #6c757d;
+            color: white;
+        }
+        .stop-btn:hover {
+            background: #545b62;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .progress {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.3s ease;
+        }
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .result-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+            background: white;
+        }
+        .result-item.correct {
+            border-left-color: #28a745;
+        }
+        .result-item.incorrect {
+            border-left-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 ASR Testing - Simple Test</h1>
+        
+        <div class="crop-display">
+            <div>
+                <div class="crop-name" id="cropName">Click "Start Test" to begin</div>
+                <div class="crop-code" id="cropCode"></div>
+            </div>
+        </div>
+        
+        <div class="progress">
+            <div>Progress: <span id="progressText">0/0</span></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="startBtn" onclick="startTest()">🚀 Start Test</button>
+            <button id="recordBtn" class="record-btn" onclick="toggleRecording()" disabled>🎤 Record</button>
+            <button id="nextBtn" class="next-btn" onclick="nextCrop()" disabled>➡️ Next</button>
+            <button id="stopBtn" class="stop-btn" onclick="stopTest()" disabled>⏹️ Stop</button>
+        </div>
+        
+        <div class="results" id="results" style="display: none;">
+            <h3>📊 Test Results</h3>
+            <div id="resultsList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simple crop data for testing
+        const testCrops = [
+            { name: 'पेठा', code: '700100' },
+            { name: 'बैंगन', code: '700500' },
+            { name: 'ब्रसेल्स स्प्राउट', code: '700600' },
+            { name: 'ब्रोकली', code: '700700' },
+            { name: 'चुकंदर', code: '700800' },
+            { name: 'करेला', code: '700900' },
+            { name: 'पत्ता गोभी', code: '701000' },
+            { name: 'फूल गोभी', code: '701100' },
+            { name: 'गाजर', code: '701200' },
+            { name: 'चीनी मेलो', code: '701300' }
+        ];
+
+        let currentCropIndex = 0;
+        let isRecording = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let testResults = [];
+        let isTestActive = false;
+
+        function startTest() {
+            currentCropIndex = 0;
+            testResults = [];
+            isTestActive = true;
+            
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('recordBtn').disabled = false;
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = false;
+            
+            showCurrentCrop();
+            updateProgress();
+        }
+
+        function showCurrentCrop() {
+            const crop = testCrops[currentCropIndex];
+            document.getElementById('cropName').textContent = crop.name;
+            document.getElementById('cropCode').textContent = `Code: ${crop.code}`;
+        }
+
+        function updateProgress() {
+            const progress = ((currentCropIndex + 1) / testCrops.length) * 100;
+            document.getElementById('progressText').textContent = `${currentCropIndex + 1}/${testCrops.length}`;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        async function toggleRecording() {
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        processAudio(audioBlob);
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    
+                    document.getElementById('recordBtn').textContent = '⏹️ Stop Recording';
+                    document.getElementById('recordBtn').classList.add('recording');
+                } catch (error) {
+                    alert('Error accessing microphone: ' + error.message);
+                }
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                document.getElementById('recordBtn').textContent = '🎤 Record';
+                document.getElementById('recordBtn').classList.remove('recording');
+            }
+        }
+
+        function processAudio(audioBlob) {
+            // Mock ASR processing - in real implementation, send to Sarvam API
+            const crop = testCrops[currentCropIndex];
+            const mockResults = [
+                crop.name, // Perfect match
+                crop.name + ' (close)', // Close match
+                'Wrong result', // Wrong result
+                crop.name.substring(0, 3), // Partial match
+                'Completely different' // Completely wrong
+            ];
+            
+            const actualResult = mockResults[Math.floor(Math.random() * mockResults.length)];
+            const isCorrect = actualResult === crop.name;
+            
+            const result = {
+                cropName: crop.name,
+                cropCode: crop.code,
+                expected: crop.name,
+                actual: actualResult,
+                correct: isCorrect,
+                timestamp: new Date().toISOString()
+            };
+            
+            testResults.push(result);
+            updateResults();
+        }
+
+        function updateResults() {
+            const resultsDiv = document.getElementById('results');
+            const resultsList = document.getElementById('resultsList');
+            
+            resultsDiv.style.display = 'block';
+            
+            const latestResult = testResults[testResults.length - 1];
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result-item ${latestResult.correct ? 'correct' : 'incorrect'}`;
+            resultDiv.innerHTML = `
+                <strong>${latestResult.cropName} (${latestResult.cropCode})</strong><br>
+                Expected: ${latestResult.expected}<br>
+                Got: ${latestResult.actual}<br>
+                Result: ${latestResult.correct ? '✅ Correct' : '❌ Incorrect'}
+            `;
+            
+            resultsList.appendChild(resultDiv);
+            resultsList.scrollTop = resultsList.scrollHeight;
+        }
+
+        function nextCrop() {
+            if (currentCropIndex < testCrops.length - 1) {
+                currentCropIndex++;
+                showCurrentCrop();
+                updateProgress();
+            } else {
+                stopTest();
+            }
+        }
+
+        function stopTest() {
+            isTestActive = false;
+            isRecording = false;
+            
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+            }
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('recordBtn').disabled = true;
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = true;
+            
+            document.getElementById('recordBtn').textContent = '🎤 Record';
+            document.getElementById('recordBtn').classList.remove('recording');
+            
+            // Show final results
+            const correctCount = testResults.filter(r => r.correct).length;
+            const totalCount = testResults.length;
+            const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+            
+            alert(`Test Complete!\n\nAccuracy: ${accuracy}% (${correctCount}/${totalCount})\n\nCheck results below for details.`);
+        }
+    </script>
+</body>
+</html>
