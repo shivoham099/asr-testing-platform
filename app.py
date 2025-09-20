@@ -15,7 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
-from flask_oauthlib.client import OAuth
+from authlib.integrations.flask_client import OAuth
 import io
 
 app = Flask(__name__)
@@ -32,18 +32,14 @@ app.config['GOOGLE_SECRET'] = os.environ.get('GOOGLE_SECRET', 'your-google-clien
 
 # Initialize OAuth
 oauth = OAuth(app)
-google = oauth.remote_app(
-    'google',
-    consumer_key=app.config['GOOGLE_ID'],
-    consumer_secret=app.config['GOOGLE_SECRET'],
-    request_token_params={
-        'scope': 'email profile'
-    },
-    base_url='https://www.googleapis.com/oauth2/v1/',
-    request_token_url=None,
-    access_token_method='POST',
-    access_token_url='https://accounts.google.com/o/oauth2/token',
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
+google = oauth.register(
+    name='google',
+    client_id=app.config['GOOGLE_ID'],
+    client_secret=app.config['GOOGLE_SECRET'],
+    server_metadata_url='https://accounts.google.com/.well-known/openid_configuration',
+    client_kwargs={
+        'scope': 'openid email profile'
+    }
 )
 
 # Allowed email domains (All Google accounts for now)
@@ -261,8 +257,8 @@ def index():
 @app.route('/login')
 def login():
     """Initiate Google OAuth login"""
-    callback = url_for('authorized', _external=True)
-    return google.authorize(callback=callback)
+    redirect_uri = url_for('authorized', _external=True)
+    return google.authorize_redirect(redirect_uri)
 
 @app.route('/logout')
 def logout():
@@ -276,58 +272,54 @@ def logout():
 @app.route('/login/authorized')
 def authorized():
     """Handle Google OAuth callback"""
-    resp = google.authorized_response()
-    if resp is None:
-        flash('Access denied: reason=%s error=%s' % (
-            request.args['error_reason'],
-            request.args['error_description']
-        ), 'error')
+    try:
+        token = google.authorize_access_token()
+        user_info = token.get('userinfo')
+        
+        if not user_info:
+            flash('Failed to get user information from Google', 'error')
+            return redirect(url_for('index'))
+        
+        email = user_info.get('email', '')
+        name = user_info.get('name', '')
+        
+        # Check if user is from allowed domain
+        if not is_allowed_user(email):
+            flash(f'Access denied. Only Google accounts can access this platform. Your email: {email}', 'error')
+            return redirect(url_for('index'))
+        
+        # Store or get QA user
+        conn = sqlite3.connect('asr_testing.db')
+        cursor = conn.cursor()
+        
+        # Check if user exists, if not create
+        cursor.execute('SELECT id FROM qa_users WHERE email = ?', (email,))
+        user = cursor.fetchone()
+        
+        if not user:
+            cursor.execute('INSERT INTO qa_users (name, email) VALUES (?, ?)', (name, email))
+            user_id = cursor.lastrowid
+        else:
+            user_id = user[0]
+            # Update name in case it changed
+            cursor.execute('UPDATE qa_users SET name = ? WHERE email = ?', (name, email))
+        
+        conn.commit()
+        conn.close()
+        
+        # Store user info in session
+        session['user'] = {
+            'name': name,
+            'email': email
+        }
+        session['user_id'] = user_id
+        
+        flash(f'Welcome, {name}!', 'success')
+        return redirect(url_for('language_selection', user_id=user_id))
+        
+    except Exception as e:
+        flash(f'Login failed: {str(e)}', 'error')
         return redirect(url_for('index'))
-    
-    session['google_token'] = (resp['access_token'], '')
-    user_data = google.get('userinfo')
-    
-    if user_data.status != 200:
-        flash('Failed to fetch user information', 'error')
-        return redirect(url_for('index'))
-    
-    user_info = user_data.data
-    email = user_info.get('email', '')
-    name = user_info.get('name', '')
-    
-    # Check if user is from allowed domain
-    if not is_allowed_user(email):
-        flash(f'Access denied. Only Sarvam team members can access this platform. Your email: {email}', 'error')
-        return redirect(url_for('index'))
-    
-    # Store or get QA user
-    conn = sqlite3.connect('asr_testing.db')
-    cursor = conn.cursor()
-    
-    # Check if user exists, if not create
-    cursor.execute('SELECT id FROM qa_users WHERE email = ?', (email,))
-    user = cursor.fetchone()
-    
-    if not user:
-        cursor.execute('INSERT INTO qa_users (name, email) VALUES (?, ?)', (name, email))
-        user_id = cursor.lastrowid
-    else:
-        user_id = user[0]
-        # Update name in case it changed
-        cursor.execute('UPDATE qa_users SET name = ? WHERE email = ?', (name, email))
-    
-    conn.commit()
-    conn.close()
-    
-    # Store user info in session
-    session['user'] = {
-        'name': name,
-        'email': email
-    }
-    session['user_id'] = user_id
-    
-    flash(f'Welcome, {name}!', 'success')
-    return redirect(url_for('language_selection', user_id=user_id))
 
 @app.route('/language_selection/<int:user_id>')
 def language_selection(user_id):
