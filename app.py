@@ -35,8 +35,8 @@ GOOGLE_CLIENT_ID = app.config['GOOGLE_ID']
 GOOGLE_CLIENT_SECRET = app.config['GOOGLE_SECRET']
 GOOGLE_REDIRECT_URI = 'https://asr-testing-platform.onrender.com/login/authorized'
 
-# Allowed email domains (All Google accounts for now)
-ALLOWED_DOMAINS = ['gmail.com', 'googlemail.com', 'google.com']  # Allow all Google accounts
+# Allowed email domains (All Google accounts + Sarvam team)
+ALLOWED_DOMAINS = ['gmail.com', 'googlemail.com', 'google.com', 'sarvam.ai']  # Allow all Google accounts + Sarvam
 
 # Create uploads directory if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
