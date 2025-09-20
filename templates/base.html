@@ -64,6 +64,20 @@
             <a class="navbar-brand" href="{{ url_for('index') }}">
                 <i class="fas fa-microphone-alt"></i> ASR Testing Platform
             </a>
+            {% if session.user %}
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user"></i> {{ session.user.name }}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </nav>
 

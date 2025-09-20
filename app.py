@@ -13,8 +13,9 @@ import subprocess
 import soundfile as sf
 from datetime import datetime
 from pathlib import Path
-from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
+from flask_oauthlib.client import OAuth
 import io
 
 app = Flask(__name__)
@@ -24,6 +25,29 @@ app.secret_key = 'your-secret-key-here'  # Change this in production
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'csv'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Google OAuth Configuration
+app.config['GOOGLE_ID'] = os.environ.get('GOOGLE_ID', 'your-google-client-id')
+app.config['GOOGLE_SECRET'] = os.environ.get('GOOGLE_SECRET', 'your-google-client-secret')
+
+# Initialize OAuth
+oauth = OAuth(app)
+google = oauth.remote_app(
+    'google',
+    consumer_key=app.config['GOOGLE_ID'],
+    consumer_secret=app.config['GOOGLE_SECRET'],
+    request_token_params={
+        'scope': 'email'
+    },
+    base_url='https://www.googleapis.com/oauth2/v1/',
+    request_token_url=None,
+    access_token_method='POST',
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+)
+
+# Allowed email domains (Sarvam team)
+ALLOWED_DOMAINS = ['sarvam.ai', 'gmail.com']  # Add your team domains here
 
 # Create uploads directory if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -52,6 +76,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS qa_users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
+            email TEXT UNIQUE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
@@ -97,6 +122,18 @@ def init_db():
 def allowed_file(filename):
     """Check if uploaded file has allowed extension"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def is_allowed_user(email):
+    """Check if user email is from allowed domain"""
+    if not email:
+        return False
+    domain = email.split('@')[-1].lower()
+    return domain in ALLOWED_DOMAINS
+
+@google.tokengetter
+def get_google_oauth_token():
+    """Get Google OAuth token from session"""
+    return session.get('google_token')
 
 def transcribe_audio(audio_data, language="hindi", model_name="saarika:v2.5"):
     """
@@ -216,16 +253,51 @@ def check_keyword_match(transcript, crop_name):
 
 @app.route('/')
 def index():
-    """Home page - QA login"""
+    """Home page - Google login"""
+    if 'user' in session:
+        return redirect(url_for('language_selection', user_id=session['user_id']))
     return render_template('index.html')
 
-@app.route('/login', methods=['POST'])
+@app.route('/login')
 def login():
-    """Handle QA login"""
-    qa_name = request.form.get('qa_name', '').strip()
+    """Initiate Google OAuth login"""
+    callback = url_for('authorized', _external=True)
+    return google.authorize(callback=callback)
+
+@app.route('/logout')
+def logout():
+    """Logout user"""
+    session.pop('google_token', None)
+    session.pop('user', None)
+    session.pop('user_id', None)
+    flash('You have been logged out successfully', 'success')
+    return redirect(url_for('index'))
+
+@app.route('/login/authorized')
+def authorized():
+    """Handle Google OAuth callback"""
+    resp = google.authorized_response()
+    if resp is None:
+        flash('Access denied: reason=%s error=%s' % (
+            request.args['error_reason'],
+            request.args['error_description']
+        ), 'error')
+        return redirect(url_for('index'))
     
-    if not qa_name:
-        flash('Please enter your name', 'error')
+    session['google_token'] = (resp['access_token'], '')
+    user_data = google.get('userinfo')
+    
+    if user_data.status != 200:
+        flash('Failed to fetch user information', 'error')
+        return redirect(url_for('index'))
+    
+    user_info = user_data.data
+    email = user_info.get('email', '')
+    name = user_info.get('name', '')
+    
+    # Check if user is from allowed domain
+    if not is_allowed_user(email):
+        flash(f'Access denied. Only Sarvam team members can access this platform. Your email: {email}', 'error')
         return redirect(url_for('index'))
     
     # Store or get QA user
@@ -233,18 +305,28 @@ def login():
     cursor = conn.cursor()
     
     # Check if user exists, if not create
-    cursor.execute('SELECT id FROM qa_users WHERE name = ?', (qa_name,))
+    cursor.execute('SELECT id FROM qa_users WHERE email = ?', (email,))
     user = cursor.fetchone()
     
     if not user:
-        cursor.execute('INSERT INTO qa_users (name) VALUES (?)', (qa_name,))
+        cursor.execute('INSERT INTO qa_users (name, email) VALUES (?, ?)', (name, email))
         user_id = cursor.lastrowid
     else:
         user_id = user[0]
+        # Update name in case it changed
+        cursor.execute('UPDATE qa_users SET name = ? WHERE email = ?', (name, email))
     
     conn.commit()
     conn.close()
     
+    # Store user info in session
+    session['user'] = {
+        'name': name,
+        'email': email
+    }
+    session['user_id'] = user_id
+    
+    flash(f'Welcome, {name}!', 'success')
     return redirect(url_for('language_selection', user_id=user_id))
 
 @app.route('/language_selection/<int:user_id>')
