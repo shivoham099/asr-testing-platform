@@ -119,10 +119,7 @@ def is_allowed_user(email):
     domain = email.split('@')[-1].lower()
     return domain in ALLOWED_DOMAINS
 
-@google.tokengetter
-def get_google_oauth_token():
-    """Get Google OAuth token from session"""
-    return session.get('google_token')
+# Removed google token getter - using direct OAuth now
 
 def transcribe_audio(audio_data, language="hindi", model_name="saarika:v2.5"):
     """
