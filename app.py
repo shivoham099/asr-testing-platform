@@ -15,7 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
-from authlib.integrations.flask_client import OAuth
+import requests
 import io
 
 app = Flask(__name__)
@@ -30,17 +30,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['GOOGLE_ID'] = os.environ.get('GOOGLE_ID', 'your-google-client-id')
 app.config['GOOGLE_SECRET'] = os.environ.get('GOOGLE_SECRET', 'your-google-client-secret')
 
-# Initialize OAuth
-oauth = OAuth(app)
-google = oauth.register(
-    name='google',
-    client_id=app.config['GOOGLE_ID'],
-    client_secret=app.config['GOOGLE_SECRET'],
-    server_metadata_url='https://accounts.google.com/.well-known/openid_configuration',
-    client_kwargs={
-        'scope': 'openid email profile'
-    }
-)
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID = app.config['GOOGLE_ID']
+GOOGLE_CLIENT_SECRET = app.config['GOOGLE_SECRET']
+GOOGLE_REDIRECT_URI = 'https://asr-testing-platform.onrender.com/login/authorized'
 
 # Allowed email domains (All Google accounts for now)
 ALLOWED_DOMAINS = ['gmail.com', 'googlemail.com', 'google.com']  # Allow all Google accounts
@@ -257,8 +250,16 @@ def index():
 @app.route('/login')
 def login():
     """Initiate Google OAuth login"""
-    redirect_uri = url_for('authorized', _external=True)
-    return google.authorize_redirect(redirect_uri)
+    # Generate Google OAuth URL
+    auth_url = (
+        f"https://accounts.google.com/o/oauth2/auth?"
+        f"client_id={GOOGLE_CLIENT_ID}&"
+        f"redirect_uri={GOOGLE_REDIRECT_URI}&"
+        f"scope=openid email profile&"
+        f"response_type=code&"
+        f"access_type=offline"
+    )
+    return redirect(auth_url)
 
 @app.route('/logout')
 def logout():
@@ -273,12 +274,36 @@ def logout():
 def authorized():
     """Handle Google OAuth callback"""
     try:
-        token = google.authorize_access_token()
-        user_info = token.get('userinfo')
-        
-        if not user_info:
-            flash('Failed to get user information from Google', 'error')
+        # Get authorization code from callback
+        code = request.args.get('code')
+        if not code:
+            flash('Authorization failed: No code received', 'error')
             return redirect(url_for('index'))
+        
+        # Exchange code for access token
+        token_url = 'https://oauth2.googleapis.com/token'
+        token_data = {
+            'client_id': GOOGLE_CLIENT_ID,
+            'client_secret': GOOGLE_CLIENT_SECRET,
+            'code': code,
+            'grant_type': 'authorization_code',
+            'redirect_uri': GOOGLE_REDIRECT_URI
+        }
+        
+        token_response = requests.post(token_url, data=token_data)
+        token_json = token_response.json()
+        
+        if 'access_token' not in token_json:
+            flash('Failed to get access token', 'error')
+            return redirect(url_for('index'))
+        
+        access_token = token_json['access_token']
+        
+        # Get user info
+        user_info_url = 'https://www.googleapis.com/oauth2/v2/userinfo'
+        headers = {'Authorization': f'Bearer {access_token}'}
+        user_response = requests.get(user_info_url, headers=headers)
+        user_info = user_response.json()
         
         email = user_info.get('email', '')
         name = user_info.get('name', '')
