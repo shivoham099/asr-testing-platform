@@ -46,8 +46,8 @@ google = oauth.remote_app(
     authorize_url='https://accounts.google.com/o/oauth2/auth',
 )
 
-# Allowed email domains (Sarvam team)
-ALLOWED_DOMAINS = ['sarvam.ai', 'gmail.com']  # Add your team domains here
+# Allowed email domains (All Google accounts for now)
+ALLOWED_DOMAINS = ['gmail.com', 'googlemail.com', 'google.com']  # Allow all Google accounts
 
 # Create uploads directory if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
