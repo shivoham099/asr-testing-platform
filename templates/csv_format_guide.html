@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}CSV Format Guide - ASR Testing Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="fas fa-file-csv"></i> CSV Format Guide for QA Team</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> Quick Instructions:</h6>
+                        <p class="mb-0">Choose any of the 4 formats below. All formats work perfectly with the platform!</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-success text-white">
+                                    <h5><i class="fas fa-check-circle"></i> Format 1: Simple List (Recommended)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Best for:</strong> Quick testing, beginners</p>
+                                    <p><strong>How to create:</strong></p>
+                                    <ol>
+                                        <li>Open Excel/Google Sheets</li>
+                                        <li>Type one crop name in each row</li>
+                                        <li>Use Column A only</li>
+                                        <li>Save as CSV</li>
+                                    </ol>
+                                    
+                                    <h6><strong>Example:</strong></h6>
+                                    <div class="bg-light p-3 rounded">
+                                        <pre><code>गेहूं
+चावल
+मक्का
+बाजरा
+ज्वार
+रागी
+अरहर
+चना
+मूंग
+उड़द</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mb-4">
+                                <div class="card-header bg-info text-white">
+                                    <h5><i class="fas fa-list"></i> Format 2: Numbered List</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Best for:</strong> Organized testing, tracking progress</p>
+                                    <p><strong>How to create:</strong></p>
+                                    <ol>
+                                        <li>Open Excel/Google Sheets</li>
+                                        <li>Type numbers in Column A (1, 2, 3...)</li>
+                                        <li>Type crop names in Column B</li>
+                                        <li>Save as CSV</li>
+                                    </ol>
+                                    
+                                    <h6><strong>Example:</strong></h6>
+                                    <div class="bg-light p-3 rounded">
+                                        <pre><code>1,गेहूं
+2,चावल
+3,मक्का
+4,बाजरा
+5,ज्वार
+6,रागी
+7,अरहर
+8,चना
+9,मूंग
+10,उड़द</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5><i class="fas fa-table"></i> Format 3: With Categories</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Best for:</strong> Detailed testing, crop categorization</p>
+                                    <p><strong>How to create:</strong></p>
+                                    <ol>
+                                        <li>Open Excel/Google Sheets</li>
+                                        <li>Type crop names in Column A</li>
+                                        <li>Type categories in Column B (optional)</li>
+                                        <li>Save as CSV</li>
+                                    </ol>
+                                    
+                                    <h6><strong>Example:</strong></h6>
+                                    <div class="bg-light p-3 rounded">
+                                        <pre><code>गेहूं,अनाज
+चावल,अनाज
+मक्का,अनाज
+बाजरा,अनाज
+टमाटर,सब्जी
+आलू,सब्जी
+प्याज,सब्जी
+गाजर,सब्जी
+केला,फल
+आम,फल</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mb-4">
+                                <div class="card-header bg-secondary text-white">
+                                    <h5><i class="fas fa-file-alt"></i> Format 4: With Descriptions</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Best for:</strong> Complex testing, detailed analysis</p>
+                                    <p><strong>How to create:</strong></p>
+                                    <ol>
+                                        <li>Open Excel/Google Sheets</li>
+                                        <li>Type crop names in Column A</li>
+                                        <li>Type descriptions in Column B (optional)</li>
+                                        <li>Save as CSV</li>
+                                    </ol>
+                                    
+                                    <h6><strong>Example:</strong></h6>
+                                    <div class="bg-light p-3 rounded">
+                                        <pre><code>गेहूं,सर्दियों की फसल
+चावल,मुख्य अनाज
+मक्का,पीला अनाज
+बाजरा,छोटे दाने
+ज्वार,लंबे पौधे
+रागी,पोषक अनाज
+अरहर,दाल
+चना,प्रोटीन युक्त
+मूंग,हरी दाल
+उड़द,काली दाल</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Important Notes for All Formats:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul>
+                                    <li><strong>Column A is always used</strong> - crop names must be in first column</li>
+                                    <li><strong>UTF-8 encoding</strong> - save your file as UTF-8</li>
+                                    <li><strong>No headers needed</strong> - start directly with data</li>
+                                    <li><strong>One crop per row</strong> - don't put multiple crops in one row</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul>
+                                    <li><strong>File extension</strong> - must be .csv</li>
+                                    <li><strong>Language match</strong> - use crop names in selected language</li>
+                                    <li><strong>No special characters</strong> - avoid commas in crop names</li>
+                                    <li><strong>Test with sample</strong> - try with 5-10 crops first</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-header">
+                                    <h6><i class="fas fa-download"></i> Quick Download Templates</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p>Download ready-to-use CSV templates:</p>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="downloadTemplate('hindi')">
+                                            <i class="fas fa-flag"></i> Hindi Template (50 crops)
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="downloadTemplate('malayalam')">
+                                            <i class="fas fa-flag"></i> Malayalam Template (50 crops)
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="downloadTemplate('gujarati')">
+                                            <i class="fas fa-flag"></i> Gujarati Template (50 crops)
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="downloadTemplate('english')">
+                                            <i class="fas fa-flag"></i> English Template (50 crops)
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-header">
+                                    <h6><i class="fas fa-tips"></i> Pro Tips</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul>
+                                        <li><strong>Start small</strong> - test with 10-20 crops first</li>
+                                        <li><strong>Use Format 1</strong> - simplest and most reliable</li>
+                                        <li><strong>Check encoding</strong> - make sure UTF-8 is selected</li>
+                                        <li><strong>Backup your files</strong> - keep copies of your CSV files</li>
+                                        <li><strong>Test upload</strong> - try uploading before starting session</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function downloadTemplate(language) {
+    // Sample crop data for each language
+    const templates = {
+        'hindi': [
+            'गेहूं', 'चावल', 'मक्का', 'बाजरा', 'ज्वार', 'रागी', 'अरहर', 'चना', 'मूंग', 'उड़द',
+            'मसूर', 'राजमा', 'सोयाबीन', 'मूंगफली', 'तिल', 'सरसों', 'सूरजमुखी', 'कपास', 'गन्ना', 'आलू',
+            'प्याज', 'टमाटर', 'बैंगन', 'मिर्च', 'खीरा', 'कद्दू', 'तरबूज', 'खरबूजा', 'अंगूर', 'केला',
+            'आम', 'संतरा', 'नींबू', 'अनार', 'सेब', 'अमरूद', 'पपीता', 'नारियल', 'काजू', 'बादाम',
+            'अखरोट', 'पिस्ता', 'हल्दी', 'अदरक', 'लहसुन', 'धनिया', 'जीरा', 'हींग', 'काली मिर्च', 'इलायची'
+        ],
+        'malayalam': [
+            'അരി', 'ഗോതമ്പ്', 'ചോളം', 'ചാമ', 'കുതിരവാലൻ', 'രാഗി', 'തുവര', 'കടല', 'പയർ', 'ഉഴുന്ന്',
+            'മസൂർ', 'രാജ്മ', 'സോയാബീൻ', 'നിലക്കടല', 'എള്ള്', 'കടുക്', 'സൂര്യകാന്തി', 'പഞ്ഞി', 'കരിമ്പ്', 'ഉരുളക്കിഴങ്ങ്',
+            'ഉയിരം', 'തക്കാളി', 'വഴുതന', 'മുളക്', 'വെള്ളരി', 'മത്തൻ', 'കുമ്പളം', 'തണ്ണിമത്തൻ', 'മുന്തിരി', 'വാഴ',
+            'മാവ്', 'ഓറഞ്ച്', 'നാരങ്ങ', 'മാതളനാരങ്ങ', 'ആപ്പിൾ', 'പേര', 'പപ്പായ', 'തെങ്ങ്', 'കശുവണ്ടി', 'ബദാം',
+            'അക്രോട്ട്', 'പിസ്ത', 'മഞ്ഞൾ', 'ഇഞ്ചി', 'വെളുത്തുള്ളി', 'മല്ലി', 'ജീരകം', 'കായം', 'കുരുമുളക്', 'ഏലക്ക'
+        ],
+        'gujarati': [
+            'ચોખા', 'ઘઉં', 'મકાઈ', 'જુવાર', 'બાજરી', 'નાચણી', 'અરહર', 'ચણા', 'મગ', 'ઉડદ',
+            'મસૂર', 'રાજમા', 'સોયાબીન', 'મગફળી', 'તલ', 'સરસવ', 'સૂરજમુખી', 'કપાસ', 'ખાંડ', 'બટાટા',
+            'ડુંગળી', 'ટમેટા', 'રીંગણ', 'મરચાં', 'કાકડી', 'કોળું', 'તરબૂચ', 'ખરબૂજ', 'દ્રાક્ષ', 'કેળા',
+            'કેરી', 'સંતરા', 'લીંબુ', 'દાડમ', 'સફરજન', 'જાંબુ', 'પપૈયા', 'નારિયેળ', 'કાજુ', 'બદામ',
+            'અખરોટ', 'પિસ્તા', 'હળદર', 'અદરક', 'લસણ', 'કોથમીર', 'જીરું', 'હીંગ', 'કાળી મરચાં', 'ઇલાયચી'
+        ],
+        'english': [
+            'Rice', 'Wheat', 'Corn', 'Millet', 'Sorghum', 'Finger Millet', 'Pigeon Pea', 'Chickpea', 'Green Gram', 'Black Gram',
+            'Lentil', 'Kidney Bean', 'Soybean', 'Peanut', 'Sesame', 'Mustard', 'Sunflower', 'Cotton', 'Sugarcane', 'Potato',
+            'Onion', 'Tomato', 'Brinjal', 'Chili', 'Cucumber', 'Pumpkin', 'Watermelon', 'Muskmelon', 'Grape', 'Banana',
+            'Mango', 'Orange', 'Lemon', 'Pomegranate', 'Apple', 'Guava', 'Papaya', 'Coconut', 'Cashew', 'Almond',
+            'Walnut', 'Pistachio', 'Turmeric', 'Ginger', 'Garlic', 'Coriander', 'Cumin', 'Asafoetida', 'Black Pepper', 'Cardamom'
+        ]
+    };
+    
+    const csvContent = templates[language].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${language}_crops_template.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+{% endblock %}

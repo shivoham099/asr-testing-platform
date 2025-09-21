@@ -557,18 +557,6 @@ def qa_guide():
     """QA Workflow Guide"""
     return render_template('qa_workflow_guide.html')
 
-@app.route('/admin_dashboard')
-def admin_dashboard():
-    """Admin dashboard to view all sessions"""
-    if 'user' not in session:
-        flash('Please log in first', 'error')
-        return redirect(url_for('index'))
-    
-    # Get all sessions and users
-    sessions = get_all_sessions()
-    users = get_all_users()
-    
-    return render_template('admin_dashboard.html', sessions=sessions, users=users)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
