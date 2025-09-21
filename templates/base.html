@@ -323,22 +323,24 @@
         .google-logo {
             width: 20px;
             height: 20px;
-            background: linear-gradient(135deg, #00d4aa 0%, #00a8cc 100%);
-            border-radius: 4px;
+            background: #000;
+            border-radius: 3px;
             position: relative;
             display: inline-block;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
         }
         
         .google-logo::before {
-            content: 'S';
+            content: 's';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: white;
-            font-weight: bold;
-            font-size: 12px;
-            font-family: 'Arial', sans-serif;
+            color: #fff;
+            font-weight: 300;
+            font-size: 11px;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
         }
         
         .microsoft-logo {
