@@ -50,12 +50,16 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h5><i class="fas fa-file-csv"></i> Sample CSV Format</h5>
+                <h5><i class="fas fa-file-csv"></i> Sample CSV Format Examples</h5>
             </div>
             <div class="card-body">
-                <p>Here's an example of how your CSV file should look:</p>
-                <div class="bg-light p-3 rounded">
-                    <pre><code>गेहूं
+                <p>Here are examples of how your CSV file should look for different languages:</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-flag"></i> Hindi Example:</h6>
+                        <div class="bg-light p-3 rounded">
+                            <pre><code>गेहूं
 चावल
 मक्का
 बाजरा
@@ -65,10 +69,70 @@
 चना
 मूंग
 उड़द</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-flag"></i> Malayalam Example:</h6>
+                        <div class="bg-light p-3 rounded">
+                            <pre><code>അരി
+ഗോതമ്പ്
+ചോളം
+ചാമ
+കുതിരവാലൻ
+രാഗി
+തുവര
+കടല
+പയർ
+ഉഴുന്ന്</code></pre>
+                        </div>
+                    </div>
                 </div>
-                <p class="mt-3">
-                    <strong>Note:</strong> For this demo, we'll use sample crop names if no CSV is uploaded.
-                </p>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-flag"></i> Gujarati Example:</h6>
+                        <div class="bg-light p-3 rounded">
+                            <pre><code>ચોખા
+ઘઉં
+મકાઈ
+જુવાર
+બાજરી
+નાચણી
+અરહર
+ચણા
+મગ
+ઉડદ</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-flag"></i> English Example:</h6>
+                        <div class="bg-light p-3 rounded">
+                            <pre><code>Rice
+Wheat
+Corn
+Millet
+Sorghum
+Finger Millet
+Pigeon Pea
+Chickpea
+Green Gram
+Black Gram</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-3">
+                    <h6><i class="fas fa-exclamation-triangle"></i> Important Notes:</h6>
+                    <ul class="mb-0">
+                        <li><strong>One crop name per row</strong> - no commas or separators</li>
+                        <li><strong>No header row</strong> - start directly with crop names</li>
+                        <li><strong>UTF-8 encoding</strong> - save your file as UTF-8 to support all languages</li>
+                        <li><strong>File extension</strong> - must be .csv</li>
+                        <li><strong>Language match</strong> - make sure your CSV contains crop names in the selected language</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
