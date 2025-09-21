@@ -323,24 +323,42 @@
         .google-logo {
             width: 20px;
             height: 20px;
-            background: #000;
-            border-radius: 3px;
+            background: 
+                conic-gradient(from 0deg at 50% 50%, 
+                    #ea4335 0deg, #ea4335 90deg,
+                    #fbbc05 90deg, #fbbc05 180deg,
+                    #34a853 180deg, #34a853 270deg,
+                    #4285f4 270deg, #4285f4 360deg);
+            border-radius: 2px;
             position: relative;
             display: inline-block;
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
         }
         
         .google-logo::before {
-            content: 's';
+            content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #fff;
-            font-weight: 300;
-            font-size: 11px;
-            font-family: 'Helvetica Neue', 'Arial', sans-serif;
-            text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: white;
+            border-radius: 1px;
+        }
+        
+        .google-logo::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            background: 
+                conic-gradient(from 0deg at 50% 50%, 
+                    #ea4335 0deg, #ea4335 90deg,
+                    #fbbc05 90deg, #fbbc05 180deg,
+                    #34a853 180deg, #34a853 270deg,
+                    #4285f4 270deg, #4285f4 360deg);
+            border-radius: 1px;
         }
         
         .microsoft-logo {
