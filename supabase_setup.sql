@@ -52,3 +52,4 @@ CREATE POLICY "Allow all operations on test_results" ON test_results FOR ALL USI
 CREATE INDEX IF NOT EXISTS idx_test_sessions_qa_user_id ON test_sessions(qa_user_id);
 CREATE INDEX IF NOT EXISTS idx_test_results_session_id ON test_results(session_id);
 CREATE INDEX IF NOT EXISTS idx_test_results_crop_name ON test_results(crop_name);
+

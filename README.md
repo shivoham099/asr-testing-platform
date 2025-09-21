@@ -95,3 +95,4 @@ The platform includes sample crop names for testing. You can also upload your ow
 - Batch processing capabilities
 - Advanced analytics and reporting
 - User management system# Force deployment - Environment variables check
+# Fresh deployment after restart - Sun Sep 21 22:03:19 IST 2025

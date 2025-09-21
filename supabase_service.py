@@ -154,3 +154,4 @@ def get_all_users():
     except Exception as e:
         print(f"Error getting all users: {e}")
         return []
+
