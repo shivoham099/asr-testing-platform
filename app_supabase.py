@@ -63,14 +63,14 @@ BCP47_CODES = {
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def transcribe_audio(audio_data, language, model_name="saarika-v1"):
+def transcribe_audio(audio_data, language, model_name="saarika:v2.5"):
     """
-    Transcribe audio using SarvamAI SDK
+    Transcribe audio using Sarvam API (direct HTTP request as per API team specs)
     
     Args:
         audio_data (bytes): Raw audio data
         language (str): Language of the audio
-        model_name (str): Model version to use
+        model_name (str): Model version to use (saarika:v2.5, saarika:v2, saarika:v1, saarika:flash)
         
     Returns:
         dict: Response containing transcription and metadata
@@ -82,14 +82,6 @@ def transcribe_audio(audio_data, language, model_name="saarika-v1"):
     language_code = BCP47_CODES[language]
         
     try:
-        # Import SarvamAI SDK
-        from sarvamai import SarvamAI
-        
-        # Initialize SarvamAI client
-        client = SarvamAI(
-            api_subscription_key=API_KEY,
-        )
-        
         # Create temporary file for input
         with tempfile.NamedTemporaryFile(suffix='.webm', delete=False) as temp_file:
             temp_file.write(audio_data)
@@ -111,29 +103,41 @@ def transcribe_audio(audio_data, language, model_name="saarika-v1"):
         if process.returncode != 0:
             raise Exception(f"FFmpeg conversion failed: {process.stderr}")
         
-        # Use SarvamAI SDK for speech-to-text
-        print(f"Using SarvamAI SDK for transcription")
+        print(f"Using direct Sarvam API for transcription")
         print(f"Language: {language_code}")
         print(f"Model: {model_name}")
         print(f"Audio file: {converted_path}")
         
-        # Call speech-to-text using the SDK
-        response = client.speech_to_text.transcribe(
-            file=converted_path,
-            language_code=language_code,
-            model=model_name
-        )
-        
-        print(f"SDK Response: {response}")
-        
-        # The SDK response is a SpeechToTextResponse object with transcript attribute
-        transcript = response.transcript
-        
-        return {
-            'transcript': transcript,
-            'language': language_code,
-            'model': model_name
+        # Use direct HTTP request with form data (as per API team specs)
+        headers = {
+            'api-subscription-key': API_KEY
         }
+        
+        # Prepare form data
+        with open(converted_path, 'rb') as audio_file:
+            files = {
+                'file': ('audio.wav', audio_file, 'audio/wav')
+            }
+            data = {
+                'model': model_name,
+                'language_code': language_code
+            }
+            
+            # Make API request
+            response = requests.post(SAARIKA_API_URL, headers=headers, files=files, data=data)
+        
+        print(f"API Response status: {response.status_code}")
+        print(f"API Response: {response.text}")
+        
+        if response.status_code != 200:
+            raise Exception(f"API request failed with status {response.status_code}: {response.text}")
+        
+        response_data = response.json()
+        
+        if 'transcript' not in response_data:
+            raise Exception(f"Invalid API response: {response_data}")
+        
+        return response_data
             
     except Exception as e:
         # Clean up temporary files if they exist
