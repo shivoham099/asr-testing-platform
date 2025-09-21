@@ -155,3 +155,4 @@ def get_all_users():
         print(f"Error getting all users: {e}")
         return []
 
+

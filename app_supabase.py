@@ -65,7 +65,7 @@ def allowed_file(filename):
 
 def transcribe_audio(audio_data, language, model_name="saarika-v1"):
     """
-    Transcribe audio using Sarvam API
+    Transcribe audio using SarvamAI SDK
     
     Args:
         audio_data (bytes): Raw audio data
@@ -82,6 +82,14 @@ def transcribe_audio(audio_data, language, model_name="saarika-v1"):
     language_code = BCP47_CODES[language]
         
     try:
+        # Import SarvamAI SDK
+        from sarvamai import SarvamAI
+        
+        # Initialize SarvamAI client
+        client = SarvamAI(
+            api_subscription_key=API_KEY,
+        )
+        
         # Create temporary file for input
         with tempfile.NamedTemporaryFile(suffix='.webm', delete=False) as temp_file:
             temp_file.write(audio_data)
@@ -103,43 +111,35 @@ def transcribe_audio(audio_data, language, model_name="saarika-v1"):
         if process.returncode != 0:
             raise Exception(f"FFmpeg conversion failed: {process.stderr}")
         
-        # Read the converted audio file
-        with open(converted_path, 'rb') as audio_file:
-            audio_bytes = audio_file.read()
+        # Use SarvamAI SDK for speech-to-text
+        print(f"Using SarvamAI SDK for transcription")
+        print(f"Language: {language_code}")
+        print(f"Model: {model_name}")
+        print(f"Audio file: {converted_path}")
         
-        # Prepare API request - try multiple authentication methods
-        headers = {
-            'Authorization': f'Bearer {API_KEY}',
-            'X-API-Key': API_KEY,
-            'Ocp-Apim-Subscription-Key': API_KEY,
-            'Content-Type': 'audio/wav'
-        }
+        # Call speech-to-text using the SDK
+        response = client.speech.transcribe(
+            audio_file=converted_path,
+            language=language_code,
+            model=model_name
+        )
         
-        params = {
+        print(f"SDK Response: {response}")
+        
+        # The SDK response should contain the transcript
+        if hasattr(response, 'transcript'):
+            transcript = response.transcript
+        elif isinstance(response, dict) and 'transcript' in response:
+            transcript = response['transcript']
+        else:
+            # If response is just a string, use it as transcript
+            transcript = str(response)
+        
+        return {
+            'transcript': transcript,
             'language': language_code,
             'model': model_name
         }
-        
-        # Make API request
-        print(f"Making API request to: {SAARIKA_API_URL}")
-        print(f"Headers: {headers}")
-        print(f"Params: {params}")
-        print(f"Audio data size: {len(audio_bytes)} bytes")
-        
-        response = requests.post(SAARIKA_API_URL, headers=headers, params=params, data=audio_bytes)
-        
-        print(f"Response status: {response.status_code}")
-        print(f"Response text: {response.text}")
-        
-        if response.status_code != 200:
-            raise Exception(f"API request failed with status {response.status_code}: {response.text}")
-        
-        response_data = response.json()
-        
-        if 'transcript' not in response_data:
-            raise Exception(f"Invalid API response: {response_data}")
-        
-        return response_data
             
     except Exception as e:
         # Clean up temporary files if they exist
