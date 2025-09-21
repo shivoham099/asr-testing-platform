@@ -135,13 +135,13 @@ def transcribe_audio(audio_data, language="hindi", model_name="saarika:v2.5"):
     Returns:
         dict: Response containing transcription and metadata
     """
-    
-    if language not in BCP47_CODES:
-        raise ValueError(f"Unsupported language: {language}. Supported: {list(BCP47_CODES.keys())}")
-    
-    # Get language code
-    language_code = BCP47_CODES[language]
-    
+        
+        if language not in BCP47_CODES:
+            raise ValueError(f"Unsupported language: {language}. Supported: {list(BCP47_CODES.keys())}")
+        
+        # Get language code
+        language_code = BCP47_CODES[language]
+        
     try:
         # Create temporary file for input
         with tempfile.NamedTemporaryFile(suffix='.webm', delete=False) as temp_file:
@@ -206,16 +206,16 @@ def transcribe_audio(audio_data, language="hindi", model_name="saarika:v2.5"):
             raise Exception(f"Invalid JSON response: {process.stdout}")
         
         return response_data
-        
+            
     except Exception as e:
         # Clean up temporary files if they exist
-        try:
+            try:
             if 'temp_path' in locals():
                 os.unlink(temp_path)
             if 'converted_path' in locals() and converted_path != temp_path:
                 os.unlink(converted_path)
-        except:
-            pass
+            except:
+                pass
         raise Exception(f"Transcription failed: {str(e)}")
 
 def check_keyword_match(transcript, crop_name):
@@ -597,6 +597,10 @@ def results(session_id):
     
     # Process results
     processed_results = []
+    well_pronounced_count = 0
+    moderate_count = 0
+    poor_count = 0
+    
     for result in results:
         crop_name = result[0]
         logs = []
@@ -608,6 +612,14 @@ def results(session_id):
             logs.append({'sentence': sentence, 'detected': detected})
             if detected:
                 correct_count += 1
+        
+        # Count by performance level
+        if correct_count >= 3:
+            well_pronounced_count += 1
+        elif correct_count == 2:
+            moderate_count += 1
+        else:
+            poor_count += 1
         
         processed_results.append({
             'crop_name': crop_name,
@@ -622,14 +634,17 @@ def results(session_id):
                          qa_name=qa_name,
                          language=language,
                          results=processed_results,
-                         created_at=created_at)
+                         created_at=created_at,
+                         well_pronounced_count=well_pronounced_count,
+                         moderate_count=moderate_count,
+                         poor_count=poor_count)
 
 @app.route('/download_csv/<int:session_id>')
 def download_csv(session_id):
     """Download results as CSV"""
-    conn = sqlite3.connect('asr_testing.db')
-    cursor = conn.cursor()
-    
+        conn = sqlite3.connect('asr_testing.db')
+        cursor = conn.cursor()
+        
     # Get session info
     cursor.execute('''
         SELECT qu.name, ts.language
@@ -643,9 +658,9 @@ def download_csv(session_id):
         return "Session not found", 404
     
     qa_name, language = session_info
-    
-    # Get test results
-    cursor.execute('''
+        
+        # Get test results
+        cursor.execute('''
         SELECT crop_name, log_1_sentence, log_1_keyword_detected,
                log_2_sentence, log_2_keyword_detected,
                log_3_sentence, log_3_keyword_detected,
@@ -655,10 +670,10 @@ def download_csv(session_id):
         WHERE session_id = ?
         ORDER BY id
     ''', (session_id,))
-    
-    results = cursor.fetchall()
-    conn.close()
-    
+        
+        results = cursor.fetchall()
+        conn.close()
+        
     # Create CSV
     output = io.StringIO()
     writer = csv.writer(output)
@@ -706,21 +721,7 @@ def download_csv(session_id):
 @app.route('/end_session/<int:session_id>')
 def end_session(session_id):
     """End testing session and redirect to results"""
-    # Mark session as completed (optional - you can add a status field to test_sessions table)
-    conn = sqlite3.connect('asr_testing.db')
-    cursor = conn.cursor()
-    
-    # Update session end time
-    cursor.execute('''
-        UPDATE test_sessions 
-        SET completed_at = CURRENT_TIMESTAMP 
-        WHERE id = ?
-    ''', (session_id,))
-    
-    conn.commit()
-    conn.close()
-    
-    # Redirect to results page
+    # Simply redirect to results page - no database update needed
     return redirect(url_for('results', session_id=session_id))
 
 if __name__ == '__main__':
