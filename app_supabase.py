@@ -325,6 +325,9 @@ def testing(session_id, crop_index):
         flash('Session not found', 'error')
         return redirect(url_for('index'))
     
+    # Get language from session info
+    language = session_info['language']
+    
     # Get crop names from session (uploaded CSV) or use sample crops
     uploaded_crops = session.get(f'crops_{session_id}', [])
     
@@ -334,7 +337,6 @@ def testing(session_id, crop_index):
     else:
         # Fallback to sample crops
         from sample_crops_data import get_sample_crops
-        language = session_info['language']
         crops = get_sample_crops(language)
     
     if not crops or crop_index >= len(crops):
