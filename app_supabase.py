@@ -552,6 +552,11 @@ def download_csv(session_id):
         download_name=f'asr_test_results_{session_info["qa_users"]["name"]}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
     )
 
+@app.route('/qa_guide')
+def qa_guide():
+    """QA Workflow Guide"""
+    return render_template('qa_workflow_guide.html')
+
 @app.route('/admin_dashboard')
 def admin_dashboard():
     """Admin dashboard to view all sessions"""

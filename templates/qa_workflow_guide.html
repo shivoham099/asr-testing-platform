@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}QA Workflow Guide - ASR Testing Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="fas fa-clipboard-list"></i> QA Workflow Guide - How to Use the Platform</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> Important for QA Team:</h6>
+                        <p class="mb-0">Follow this step-by-step guide to ensure proper testing and data collection. Keep your own records as backup!</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5><i class="fas fa-list-ol"></i> Complete QA Workflow:</h5>
+                            
+                            <div class="workflow-step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h6><strong>Login with Sarvam ID</strong></h6>
+                                    <ul>
+                                        <li>Click "Sign in with Google"</li>
+                                        <li>Use your Sarvam email (e.g., yourname@sarvam.ai)</li>
+                                        <li>You'll be redirected to language selection</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="workflow-step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h6><strong>Select Language</strong></h6>
+                                    <ul>
+                                        <li>Choose your testing language: Hindi, Malayalam, Gujarati, Odia, or English</li>
+                                        <li>Click on the language button</li>
+                                        <li>You'll be taken to the CSV upload page</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="workflow-step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h6><strong>Upload CSV File</strong></h6>
+                                    <ul>
+                                        <li>Create your CSV file with crop names (one per row)</li>
+                                        <li>Click "Choose file" and select your CSV</li>
+                                        <li>Click "Upload & Start Testing"</li>
+                                        <li>You'll see the first crop name to test</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="workflow-step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h6><strong>Use Words in Sentences</strong></h6>
+                                    <ul>
+                                        <li>Read the crop name displayed on screen</li>
+                                        <li>Use it in a sentence (e.g., "I am saying टमाटर" for tomato)</li>
+                                        <li>Don't just say the word alone - use it in context</li>
+                                        <li>Speak clearly and at normal pace</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="workflow-step">
+                                <div class="step-number">5</div>
+                                <div class="step-content">
+                                    <h6><strong>Record Audio</strong></h6>
+                                    <ul>
+                                        <li>Click "Start Recording" (green button with microphone)</li>
+                                        <li>Say your sentence with the crop name</li>
+                                        <li>Click "Stop Recording" (red button with square)</li>
+                                        <li>Wait for transcription to appear</li>
+                                        <li>Check if the crop name was detected correctly</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="workflow-step">
+                                <div class="step-number">6</div>
+                                <div class="step-content">
+                                    <h6><strong>Submit and Record Again</strong></h6>
+                                    <ul>
+                                        <li>Click "Submit" to save the recording</li>
+                                        <li>Record the same crop name 4 more times (5 total attempts)</li>
+                                        <li>Each attempt should be a different sentence</li>
+                                        <li>Example sentences: "I am saying टमाटर", "The crop is टमाटर", "टमाटर is red", etc.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="workflow-step">
+                                <div class="step-number">7</div>
+                                <div class="step-content">
+                                    <h6><strong>End Session and Create Reports</strong></h6>
+                                    <ul>
+                                        <li>You can click "End Session" anytime to finish testing</li>
+                                        <li>This will take you to the results page</li>
+                                        <li>You'll see summary statistics and detailed results</li>
+                                        <li>Click "Download CSV" to get the complete report</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="workflow-step">
+                                <div class="step-number">8</div>
+                                <div class="step-content">
+                                    <h6><strong>Download Reports and Compile Analysis</strong></h6>
+                                    <ul>
+                                        <li>Download the CSV report for each session</li>
+                                        <li>Compile all reports for final analysis</li>
+                                        <li>Note which crop names had poor recognition</li>
+                                        <li>Identify patterns in mispronunciations</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card bg-warning">
+                                <div class="card-header">
+                                    <h6><i class="fas fa-exclamation-triangle"></i> Important Backup Instructions</h6>
+                                </div>
+                                <div class="card-body">
+                                    <h6><strong>Keep Your Own Records!</strong></h6>
+                                    <p>In case the platform stops recording data, maintain your own backup:</p>
+                                    <ul>
+                                        <li><strong>Record mispronounced words</strong> in a separate document</li>
+                                        <li><strong>Note which attempts failed</strong> for each crop</li>
+                                        <li><strong>Keep track of session dates</strong> and languages tested</li>
+                                        <li><strong>Save screenshots</strong> of important results</li>
+                                        <li><strong>Download reports immediately</strong> after each session</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="card bg-light mt-3">
+                                <div class="card-header">
+                                    <h6><i class="fas fa-tips"></i> Pro Tips</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul>
+                                        <li><strong>Test in quiet environment</strong> - no background noise</li>
+                                        <li><strong>Use consistent microphone</strong> - same device for all tests</li>
+                                        <li><strong>Speak naturally</strong> - don't over-enunciate</li>
+                                        <li><strong>Take breaks</strong> - don't rush through all crops</li>
+                                        <li><strong>Test different times</strong> - morning vs evening</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-success mt-4">
+                        <h6><i class="fas fa-check-circle"></i> Quality Checklist:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul>
+                                    <li>✅ Used Sarvam email for login</li>
+                                    <li>✅ Selected correct language</li>
+                                    <li>✅ Uploaded properly formatted CSV</li>
+                                    <li>✅ Used crop names in sentences</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul>
+                                    <li>✅ Recorded 5 attempts per crop</li>
+                                    <li>✅ Downloaded CSV reports</li>
+                                    <li>✅ Kept backup records</li>
+                                    <li>✅ Compiled final analysis</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.workflow-step {
+    display: flex;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border-left: 4px solid #007bff;
+    background-color: #f8f9fa;
+    border-radius: 0 8px 8px 0;
+}
+
+.step-number {
+    background-color: #007bff;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-content h6 {
+    color: #007bff;
+    margin-bottom: 0.5rem;
+}
+
+.step-content ul {
+    margin-bottom: 0;
+}
+
+.step-content li {
+    margin-bottom: 0.25rem;
+}
+</style>
+{% endblock %}
