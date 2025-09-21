@@ -94,4 +94,4 @@ The platform includes sample crop names for testing. You can also upload your ow
 - Additional language support
 - Batch processing capabilities
 - Advanced analytics and reporting
-- User management system
+- User management system# Force deployment - Environment variables check
