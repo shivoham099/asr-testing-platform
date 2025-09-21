@@ -8,129 +8,307 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            margin: 0;
+            padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .navbar {
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
         }
-        .navbar-brand {
+        
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #2d5a27 0%, #1a3d1a 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 2px, transparent 2px),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                radial-gradient(circle at 40% 80%, rgba(255,255,255,0.1) 1.5px, transparent 1.5px);
+            background-size: 50px 50px, 30px 30px, 40px 40px;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .logo::before {
+            content: '';
+            width: 60px;
+            height: 60px;
+            background: 
+                linear-gradient(45deg, transparent 40%, #2d5a27 40%, #2d5a27 60%, transparent 60%),
+                linear-gradient(-45deg, transparent 40%, #2d5a27 40%, #2d5a27 60%, transparent 60%);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+        
+        .right-panel {
+            flex: 1;
+            background: #F8F7F5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+        
+        .login-form {
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .brand-header {
+            margin-bottom: 40px;
+        }
+        
+        .brand-name {
+            font-size: 2rem;
             font-weight: bold;
-            color: #2c3e50 !important;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .brand-tag {
+            display: inline-block;
+            background: #e9ecef;
+            color: #6c757d;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        
+        .welcome-text {
+            color: #2c3e50;
             font-size: 1.5rem;
-        }
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-        }
-        .btn-primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border: none;
-            border-radius: 25px;
-            padding: 12px 30px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            margin: 20px 0 5px 0;
         }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        
+        .subtitle {
+            color: #6c757d;
+            font-size: 1rem;
+            margin-bottom: 30px;
         }
-        .btn-success {
-            background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+        
+        .password-field {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
             border: none;
-            border-radius: 25px;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            color: #6c757d;
+            cursor: pointer;
         }
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(86, 171, 47, 0.4);
-        }
-        .btn-danger {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        
+        .btn-signin {
+            width: 100%;
+            background: #2c3e50;
+            color: white;
             border: none;
-            border-radius: 25px;
-            padding: 12px 30px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
             font-weight: 600;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.3s ease;
         }
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+        
+        .btn-signin:hover {
+            background: #34495e;
         }
+        
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e9ecef;
+            z-index: 1;
+        }
+        
+        .divider span {
+            background: #F8F7F5;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .social-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .btn-social {
+            flex: 1;
+            background: white;
+            border: 1px solid #e9ecef;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.3s ease;
+        }
+        
+        .btn-social:hover {
+            border-color: #007bff;
+        }
+        
+        .google-logo {
+            width: 20px;
+            height: 20px;
+            background: conic-gradient(from 0deg, #ea4335, #fbbc05, #34a853, #4285f4, #ea4335);
+            border-radius: 2px;
+        }
+        
+        .microsoft-logo {
+            width: 20px;
+            height: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 1px;
+        }
+        
+        .microsoft-logo div {
+            background: #f25022;
+        }
+        
+        .microsoft-logo div:nth-child(2) {
+            background: #7fba00;
+        }
+        
+        .microsoft-logo div:nth-child(3) {
+            background: #00a4ef;
+        }
+        
+        .microsoft-logo div:nth-child(4) {
+            background: #ffb900;
+        }
+        
+        .footer-text {
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        
+        .footer-text a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+        
+        .navbar {
+            display: none;
+        }
+        
+        .container {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+        }
+        
         .recording-indicator {
             display: none;
             color: #ff416c;
             animation: pulse 1s infinite;
         }
+        
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.5; }
             100% { opacity: 1; }
         }
+        
         .progress-bar {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: #2c3e50;
         }
+        
         .language-flag {
             font-size: 1.2em;
             margin-right: 8px;
         }
-        .container {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">
-                <i class="fas fa-microphone-alt"></i> ASR Testing Platform
-            </a>
-            {% if session.user %}
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> {{ session.user.name }}
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">
-                            <i class="fas fa-users-cog"></i> Admin Dashboard
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ url_for('logout') }}">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a></li>
-                    </ul>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-    </nav>
-
-    <div class="container mt-4">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        {% block content %}{% endblock %}
-    </div>
+    {% block content %}{% endblock %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     {% block scripts %}{% endblock %}
