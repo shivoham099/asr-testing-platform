@@ -148,7 +148,12 @@ def transcribe_audio(audio_data, language, model_name="saarika:v2.5"):
         if response.status_code != 200:
             raise Exception(f"API request failed with status {response.status_code}: {response.text}")
         
-        response_data = response.json()
+        # Check if response is JSON
+        try:
+            response_data = response.json()
+        except ValueError as e:
+            # If response is not JSON (e.g., HTML error page), raise a more helpful error
+            raise Exception(f"API returned non-JSON response (likely HTML error page): {response.text[:200]}...")
         
         if 'transcript' not in response_data:
             raise Exception(f"Invalid API response: {response_data}")
@@ -428,7 +433,18 @@ def submit_recording():
         })
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        error_msg = str(e)
+        print(f"Error in submit_recording: {error_msg}")
+        
+        # Provide more specific error messages
+        if "API returned non-JSON response" in error_msg:
+            return jsonify({'error': 'Server error: API returned HTML instead of JSON. Please try again.'}), 500
+        elif "SARVAM_API_KEY environment variable not set" in error_msg:
+            return jsonify({'error': 'Server configuration error: API key not set'}), 500
+        elif "FFmpeg conversion failed" in error_msg:
+            return jsonify({'error': 'Audio processing error: Unable to convert audio format'}), 500
+        else:
+            return jsonify({'error': f'Recording submission failed: {error_msg}'}), 500
 
 @app.route('/results/<int:session_id>')
 def results(session_id):
