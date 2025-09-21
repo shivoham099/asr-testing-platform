@@ -304,6 +304,9 @@ def process_csv():
             flash('Failed to create test session', 'error')
             return redirect(url_for('upload_csv', user_id=user_id, language=language))
         
+        # Store crop names in session for this session
+        session[f'crops_{session_id}'] = crop_names
+        
         # Clean up uploaded file
         os.unlink(filepath)
         
@@ -322,18 +325,24 @@ def testing(session_id, crop_index):
         flash('Session not found', 'error')
         return redirect(url_for('index'))
     
-    # For now, use sample crops (you can modify this to use uploaded crops)
-    from sample_crops_data import get_sample_crops
+    # Get crop names from session (uploaded CSV) or use sample crops
+    uploaded_crops = session.get(f'crops_{session_id}', [])
     
-    language = session_info['language']
-    sample_crops = get_sample_crops(language)
+    if uploaded_crops:
+        # Use uploaded crop names
+        crops = uploaded_crops
+    else:
+        # Fallback to sample crops
+        from sample_crops_data import get_sample_crops
+        language = session_info['language']
+        crops = get_sample_crops(language)
     
-    if not sample_crops or crop_index >= len(sample_crops):
+    if not crops or crop_index >= len(crops):
         flash('No more crops to test', 'error')
         return redirect(url_for('results', session_id=session_id))
     
-    current_crop = sample_crops[crop_index]
-    total_crops = len(sample_crops)
+    current_crop = crops[crop_index]
+    total_crops = len(crops)
     
     return render_template('testing.html', 
                          session_id=session_id,
