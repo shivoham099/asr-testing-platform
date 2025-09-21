@@ -135,12 +135,11 @@ def transcribe_audio(audio_data, language="hindi", model_name="saarika:v2.5"):
     Returns:
         dict: Response containing transcription and metadata
     """
-        
-        if language not in BCP47_CODES:
-            raise ValueError(f"Unsupported language: {language}. Supported: {list(BCP47_CODES.keys())}")
-        
-        # Get language code
-        language_code = BCP47_CODES[language]
+    if language not in BCP47_CODES:
+        raise ValueError(f"Unsupported language: {language}. Supported: {list(BCP47_CODES.keys())}")
+    
+    # Get language code
+    language_code = BCP47_CODES[language]
         
     try:
         # Create temporary file for input
