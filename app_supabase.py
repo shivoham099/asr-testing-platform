@@ -49,7 +49,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # API configuration
 SAARIKA_API_URL = "https://api.sarvam.ai/speech-to-text"
-API_KEY = 'sk_b5ytcz77_i95Ys6RPGfu2LrK3F2xgydU4'
+API_KEY = os.environ.get('SARVAM_API_KEY', 'sk_b5ytcz77_i95Ys6RPGfu2LrK3F2xgydU4')
 
 # Language code mappings
 BCP47_CODES = {
@@ -109,7 +109,7 @@ def transcribe_audio(audio_data, language, model_name="saarika-v1"):
         
         # Prepare API request
         headers = {
-            'Authorization': f'Bearer {API_KEY}',
+            'Ocp-Apim-Subscription-Key': API_KEY,
             'Content-Type': 'audio/wav'
         }
         
