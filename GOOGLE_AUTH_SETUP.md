@@ -97,3 +97,4 @@ If you need help, check:
 - Google OAuth documentation
 - Render environment variables guide
 - Flask-OAuthlib documentation
+
