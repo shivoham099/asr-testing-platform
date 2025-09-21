@@ -44,6 +44,15 @@ GOOGLE_REDIRECT_URI = 'https://asr-testing-platform.onrender.com/login/authorize
 # Allowed email domains (All Google accounts + Sarvam team)
 ALLOWED_DOMAINS = ['gmail.com', 'googlemail.com', 'google.com', 'sarvam.ai']  # Allow all Google accounts + Sarvam
 
+# Admin access - only specific Sarvam team members
+ADMIN_EMAILS = [
+    'shivesh@sarvam.ai',
+    'prerna@sarvam.ai', 
+    'shivender@sarvam.ai',
+    'karman@sarvam.ai',
+    'prajnavegesna@sarvam.ai'
+]
+
 # Create uploads directory if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -62,6 +71,10 @@ BCP47_CODES = {
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def is_admin(user_email):
+    """Check if user has admin access"""
+    return user_email in ADMIN_EMAILS
 
 def transcribe_audio(audio_data, language, model_name="saarika:v2.5"):
     """
@@ -541,9 +554,15 @@ def download_csv(session_id):
 
 @app.route('/admin_dashboard')
 def admin_dashboard():
-    """Admin dashboard to view all sessions"""
+    """Admin dashboard to view all sessions - restricted to Sarvam team only"""
     if 'user' not in session:
         flash('Please log in first', 'error')
+        return redirect(url_for('index'))
+    
+    # Check if user has admin access
+    user_email = session['user']['email']
+    if not is_admin(user_email):
+        flash('Access denied. Admin access is restricted to Sarvam team members only.', 'error')
         return redirect(url_for('index'))
     
     # Get all sessions and users
