@@ -49,7 +49,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # API configuration
 SAARIKA_API_URL = "https://api.sarvam.ai/speech-to-text"
-API_KEY = os.environ.get('SARVAM_API_KEY', 'sk_b5ytcz77_i95Ys6RPGfu2LrK3F2xgydU4')
+API_KEY = 'sk_b5ytcz77_i95Ys6RPGfu2LrK3F2xgydU4'
 
 # Language code mappings
 BCP47_CODES = {
