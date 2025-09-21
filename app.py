@@ -208,13 +208,13 @@ def transcribe_audio(audio_data, language="hindi", model_name="saarika:v2.5"):
             
     except Exception as e:
         # Clean up temporary files if they exist
-            try:
+        try:
             if 'temp_path' in locals():
                 os.unlink(temp_path)
             if 'converted_path' in locals() and converted_path != temp_path:
                 os.unlink(converted_path)
-            except:
-                pass
+        except:
+            pass
         raise Exception(f"Transcription failed: {str(e)}")
 
 def check_keyword_match(transcript, crop_name):
