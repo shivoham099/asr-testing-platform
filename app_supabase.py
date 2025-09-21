@@ -554,15 +554,9 @@ def download_csv(session_id):
 
 @app.route('/admin_dashboard')
 def admin_dashboard():
-    """Admin dashboard to view all sessions - restricted to Sarvam team only"""
+    """Admin dashboard to view all sessions"""
     if 'user' not in session:
         flash('Please log in first', 'error')
-        return redirect(url_for('index'))
-    
-    # Check if user has admin access
-    user_email = session['user']['email']
-    if not is_admin(user_email):
-        flash('Access denied. Admin access is restricted to Sarvam team members only.', 'error')
         return redirect(url_for('index'))
     
     # Get all sessions and users
