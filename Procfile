@@ -1,1 +1,1 @@
-python app_supabase.py
+web: python app_supabase.py
