@@ -49,7 +49,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # API configuration
 SAARIKA_API_URL = "https://api.sarvam.ai/speech-to-text"
-API_KEY = os.environ.get('SARVAM_API_KEY', 'sk_b5ytcz77_i95Ys6RPGfu2LrK3F2xgydU4')
+API_KEY = os.environ.get('SARVAM_API_KEY')
 
 # Language code mappings
 BCP47_CODES = {
@@ -75,6 +75,9 @@ def transcribe_audio(audio_data, language, model_name="saarika:v2.5"):
     Returns:
         dict: Response containing transcription and metadata
     """
+    if not API_KEY:
+        raise ValueError("SARVAM_API_KEY environment variable not set")
+    
     if language not in BCP47_CODES:
         raise ValueError(f"Unsupported language: {language}. Supported: {list(BCP47_CODES.keys())}")
     
