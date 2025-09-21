@@ -1,48 +1,70 @@
 {% extends "base.html" %}
 
-{% block title %}Login - ASR Testing Platform{% endblock %}
+{% block title %}ASR Testing Platform - Login{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-primary text-white text-center">
-                <h4><i class="fas fa-sign-in-alt"></i> Sarvam Team Login</h4>
-            </div>
-            <div class="card-body text-center">
-                <div class="mb-4">
-                    <i class="fab fa-google fa-3x text-primary mb-3"></i>
-                    <h5>Sign in with Google</h5>
-                    <p class="text-muted">Sign in with your Google account</p>
-                </div>
-                
-                <div class="d-grid">
-                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
-                        <i class="fab fa-google me-2"></i> Sign in with Google
-                    </a>
-                </div>
-            </div>
-            <div class="card-footer text-muted text-center">
-                <small>Sign in with any Google account to access this platform</small>
-            </div>
-        </div>
+<div class="main-layout">
+    <!-- Left Panel with Logo -->
+    <div class="left-panel">
+        <div class="logo"></div>
     </div>
-</div>
-
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5><i class="fas fa-info-circle"></i> Platform Information</h5>
+    
+    <!-- Right Panel with Login Form -->
+    <div class="right-panel">
+        <div class="login-form">
+            <div class="brand-header">
+                <h1 class="brand-name">sarvam</h1>
+                <span class="brand-tag">Agents</span>
             </div>
-            <div class="card-body">
-                <p>This platform is designed for QA testing of ASR (Automatic Speech Recognition) systems, specifically for DCS crop name recognition.</p>
-                <ul>
-                    <li>Upload a CSV file with crop names</li>
-                    <li>Record audio for each crop name (5 attempts per crop)</li>
-                    <li>Test ASR accuracy using Sarvam API</li>
-                    <li>Download detailed results as CSV</li>
-                </ul>
+            
+            <h2 class="welcome-text">Welcome back</h2>
+            <p class="subtitle">Login to your account</p>
+            
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="Organization" disabled>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="email" class="form-control" placeholder="Username..." value="sarvam-admin@ipac.com" disabled>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <div class="password-field">
+                    <input type="password" class="form-control" placeholder="Password" value="••••••••" disabled>
+                    <button type="button" class="password-toggle">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <a href="{{ url_for('login') }}" class="btn-signin">
+                Sign-in
+                <i class="fas fa-arrow-right"></i>
+            </a>
+            
+            <div class="divider">
+                <span>or continue with</span>
+            </div>
+            
+            <div class="social-buttons">
+                <a href="{{ url_for('login') }}" class="btn-social">
+                    <div class="google-logo"></div>
+                </a>
+                <button class="btn-social" disabled>
+                    <div class="microsoft-logo">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </button>
+            </div>
+            
+            <div class="footer-text">
+                By signing in, you agree to our <a href="#">privacy policy.</a><br>
+                Privacy - Terms
             </div>
         </div>
     </div>
