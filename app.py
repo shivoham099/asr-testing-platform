@@ -703,6 +703,26 @@ def download_csv(session_id):
         download_name=f'asr_test_results_{qa_name}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
     )
 
+@app.route('/end_session/<int:session_id>')
+def end_session(session_id):
+    """End testing session and redirect to results"""
+    # Mark session as completed (optional - you can add a status field to test_sessions table)
+    conn = sqlite3.connect('asr_testing.db')
+    cursor = conn.cursor()
+    
+    # Update session end time
+    cursor.execute('''
+        UPDATE test_sessions 
+        SET completed_at = CURRENT_TIMESTAMP 
+        WHERE id = ?
+    ''', (session_id,))
+    
+    conn.commit()
+    conn.close()
+    
+    # Redirect to results page
+    return redirect(url_for('results', session_id=session_id))
+
 if __name__ == '__main__':
     init_db()
     port = int(os.environ.get('PORT', 5000))

@@ -18,12 +18,48 @@
                     </div>
                     <div class="col-md-6 text-end">
                         <a href="{{ url_for('download_csv', session_id=session_id) }}" 
-                           class="btn btn-primary">
-                            <i class="fas fa-download"></i> Download CSV
+                           class="btn btn-success btn-lg">
+                            <i class="fas fa-file-csv"></i> Download CSV Report
                         </a>
-                        <a href="{{ url_for('index') }}" class="btn btn-secondary ms-2">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lg ms-2">
                             <i class="fas fa-home"></i> New Test
                         </a>
+                    </div>
+                </div>
+                
+                <!-- Summary Section -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ results|length }}</h5>
+                                <p class="card-text">Total Crops Tested</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ results|selectattr('correct_count', '>=', 3)|list|length }}</h5>
+                                <p class="card-text">Well Pronounced (3+/5)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ results|selectattr('correct_count', '==', 2)|list|length }}</h5>
+                                <p class="card-text">Moderate (2/5)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-danger text-white text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ results|selectattr('correct_count', '<=', 1)|list|length }}</h5>
+                                <p class="card-text">Poor (0-1/5)</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -156,9 +192,18 @@
                     <li>Keyword detection status for each attempt</li>
                 </ul>
                 <a href="{{ url_for('download_csv', session_id=session_id) }}" 
-                   class="btn btn-primary">
-                    <i class="fas fa-download"></i> Download Complete Results CSV
+                   class="btn btn-success btn-lg">
+                    <i class="fas fa-file-csv"></i> Download Detailed CSV Report
                 </a>
+                <div class="alert alert-info mt-3">
+                    <h6><i class="fas fa-info-circle"></i> CSV Report Details:</h6>
+                    <p class="mb-0">
+                        The CSV report contains detailed information for each crop including:
+                        <strong>Crop Name</strong>, <strong>Correct Pronunciations (X/5)</strong>,
+                        <strong>Each sentence recorded</strong>, and <strong>ASR detection results</strong>.
+                        Perfect for detailed analysis and sharing with your team!
+                    </p>
+                </div>
             </div>
         </div>
     </div>
