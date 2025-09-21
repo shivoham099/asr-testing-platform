@@ -323,42 +323,22 @@
         .google-logo {
             width: 20px;
             height: 20px;
-            background: 
-                conic-gradient(from 0deg at 50% 50%, 
-                    #ea4335 0deg, #ea4335 90deg,
-                    #fbbc05 90deg, #fbbc05 180deg,
-                    #34a853 180deg, #34a853 270deg,
-                    #4285f4 270deg, #4285f4 360deg);
-            border-radius: 2px;
+            background: linear-gradient(135deg, #00d4aa 0%, #00a8cc 100%);
+            border-radius: 4px;
             position: relative;
             display: inline-block;
         }
         
         .google-logo::before {
-            content: '';
+            content: 'S';
             position: absolute;
-            top: 2px;
-            left: 2px;
-            right: 2px;
-            bottom: 2px;
-            background: white;
-            border-radius: 1px;
-        }
-        
-        .google-logo::after {
-            content: '';
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            right: 4px;
-            bottom: 4px;
-            background: 
-                conic-gradient(from 0deg at 50% 50%, 
-                    #ea4335 0deg, #ea4335 90deg,
-                    #fbbc05 90deg, #fbbc05 180deg,
-                    #34a853 180deg, #34a853 270deg,
-                    #4285f4 270deg, #4285f4 360deg);
-            border-radius: 1px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            font-family: 'Arial', sans-serif;
         }
         
         .microsoft-logo {
