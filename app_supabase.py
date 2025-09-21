@@ -107,8 +107,10 @@ def transcribe_audio(audio_data, language, model_name="saarika-v1"):
         with open(converted_path, 'rb') as audio_file:
             audio_bytes = audio_file.read()
         
-        # Prepare API request
+        # Prepare API request - try multiple authentication methods
         headers = {
+            'Authorization': f'Bearer {API_KEY}',
+            'X-API-Key': API_KEY,
             'Ocp-Apim-Subscription-Key': API_KEY,
             'Content-Type': 'audio/wav'
         }
@@ -119,7 +121,15 @@ def transcribe_audio(audio_data, language, model_name="saarika-v1"):
         }
         
         # Make API request
+        print(f"Making API request to: {SAARIKA_API_URL}")
+        print(f"Headers: {headers}")
+        print(f"Params: {params}")
+        print(f"Audio data size: {len(audio_bytes)} bytes")
+        
         response = requests.post(SAARIKA_API_URL, headers=headers, params=params, data=audio_bytes)
+        
+        print(f"Response status: {response.status_code}")
+        print(f"Response text: {response.text}")
         
         if response.status_code != 200:
             raise Exception(f"API request failed with status {response.status_code}: {response.text}")
