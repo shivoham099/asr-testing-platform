@@ -13,40 +13,31 @@
                 <div class="alert alert-info">
                     <h6><i class="fas fa-info-circle"></i> How to Create Your CSV File:</h6>
                     <div class="row">
-                        <div class="col-md-6">
-                            <h6><strong>Step 1: Open Excel/Google Sheets</strong></h6>
-                            <ul>
-                                <li>Open Microsoft Excel or Google Sheets</li>
-                                <li>Create a new document</li>
-                            </ul>
+                        <div class="col-md-3">
+                            <h6><strong>Step 1:</strong></h6>
+                            <p>Open Excel/Google Sheets</p>
                         </div>
-                        <div class="col-md-6">
-                            <h6><strong>Step 2: Add Crop Names</strong></h6>
-                            <ul>
-                                <li>Type one crop name in each row</li>
-                                <li>Use Column A only</li>
-                                <li>Don't add headers or titles</li>
-                            </ul>
+                        <div class="col-md-3">
+                            <h6><strong>Step 2:</strong></h6>
+                            <p>Add crop names (one per row, Column A only)</p>
                         </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-6">
-                            <h6><strong>Step 3: Save as CSV</strong></h6>
-                            <ul>
-                                <li>Go to File → Save As</li>
-                                <li>Choose "CSV" format</li>
-                                <li>Make sure encoding is UTF-8</li>
-                            </ul>
+                        <div class="col-md-3">
+                            <h6><strong>Step 3:</strong></h6>
+                            <p>Save as CSV with UTF-8 encoding</p>
                         </div>
-                        <div class="col-md-6">
-                            <h6><strong>Step 4: Upload Here</strong></h6>
-                            <ul>
-                                <li>Click "Choose file" below</li>
-                                <li>Select your CSV file</li>
-                                <li>Click "Upload & Start Testing"</li>
-                            </ul>
+                        <div class="col-md-3">
+                            <h6><strong>Step 4:</strong></h6>
+                            <p>Upload to the platform</p>
                         </div>
                     </div>
+                    <hr>
+                    <h6><strong>Clear Instructions:</strong></h6>
+                    <ul class="mb-0">
+                        <li>File → Save As → CSV format</li>
+                        <li>Make sure encoding is UTF-8</li>
+                        <li>Use Column A only</li>
+                        <li>No titles or headers</li>
+                    </ul>
                 </div>
                 
                 <form method="POST" action="{{ url_for('process_csv') }}" enctype="multipart/form-data">
@@ -152,35 +143,6 @@ Black Gram</code></pre>
                     </div>
                 </div>
                 
-                <div class="alert alert-warning mt-3">
-                    <h6><i class="fas fa-exclamation-triangle"></i> Important Notes for QA Team:</h6>
-                    <ul class="mb-0">
-                        <li><strong>One crop name per row</strong> - no commas or separators</li>
-                        <li><strong>No header row</strong> - start directly with crop names</li>
-                        <li><strong>UTF-8 encoding</strong> - save your file as UTF-8 to support all languages</li>
-                        <li><strong>File extension</strong> - must be .csv</li>
-                        <li><strong>Language match</strong> - make sure your CSV contains crop names in the selected language</li>
-                    </ul>
-                </div>
-                
-                <div class="alert alert-success mt-3">
-                    <h6><i class="fas fa-lightbulb"></i> Quick Start Guide for QA:</h6>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <h6><strong>For Hindi Testing:</strong></h6>
-                            <p>Create CSV with Hindi crop names like: गेहूं, चावल, मक्का, etc.</p>
-                        </div>
-                        <div class="col-md-4">
-                            <h6><strong>For Malayalam Testing:</strong></h6>
-                            <p>Create CSV with Malayalam crop names like: അരി, ഗോതമ്പ്, ചോളം, etc.</p>
-                        </div>
-                        <div class="col-md-4">
-                            <h6><strong>For Gujarati Testing:</strong></h6>
-                            <p>Create CSV with Gujarati crop names like: ચોખા, ઘઉં, મકાઈ, etc.</p>
-                        </div>
-                    </div>
-                    <p class="mt-2 mb-0"><strong>Tip:</strong> You can copy the examples above and paste them into Excel, then save as CSV!</p>
-                </div>
             </div>
         </div>
     </div>
