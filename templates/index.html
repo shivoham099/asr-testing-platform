@@ -14,53 +14,26 @@
         <div class="login-form">
             <div class="brand-header">
                 <h1 class="brand-name">sarvam</h1>
-                <span class="brand-tag">Agents</span>
+                <span class="brand-tag">QA Testing</span>
             </div>
             
             <h2 class="welcome-text">Welcome back</h2>
             <p class="subtitle">Login to your account</p>
             
-            <div class="form-group">
-                <input type="text" class="form-control" placeholder="Organization" disabled>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Username</label>
-                <input type="email" class="form-control" placeholder="Username..." value="sarvam-admin@ipac.com" disabled>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Password</label>
-                <div class="password-field">
-                    <input type="password" class="form-control" placeholder="Password" value="••••••••" disabled>
-                    <button type="button" class="password-toggle">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
+            <div class="platform-info">
+                <h4>Platform Features:</h4>
+                <ul>
+                    <li>Test ASR accuracy with crop names</li>
+                    <li>Record audio for multiple languages</li>
+                    <li>Generate detailed CSV reports</li>
+                    <li>Track pronunciation accuracy</li>
+                </ul>
             </div>
             
             <a href="{{ url_for('login') }}" class="btn-signin">
-                Sign-in
-                <i class="fas fa-arrow-right"></i>
+                <div class="google-logo"></div>
+                Continue with Google
             </a>
-            
-            <div class="divider">
-                <span>or continue with</span>
-            </div>
-            
-            <div class="social-buttons">
-                <a href="{{ url_for('login') }}" class="btn-social">
-                    <div class="google-logo"></div>
-                </a>
-                <button class="btn-social" disabled>
-                    <div class="microsoft-logo">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>
-                </button>
-            </div>
             
             <div class="footer-text">
                 By signing in, you agree to our <a href="#">privacy policy.</a><br>

@@ -24,7 +24,7 @@
         .left-panel {
             flex: 1;
             background: 
-                linear-gradient(135deg, #2d5a27 0%, #1a3d1a 100%),
+                linear-gradient(135deg, #4a7c59 0%, #2d5a27 100%),
                 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="leaf" patternUnits="userSpaceOnUse" width="100" height="100"><path d="M20,20 Q30,10 40,20 Q50,15 60,20 Q70,25 80,20 Q85,30 80,40 Q75,50 80,60 Q85,70 80,80 Q70,85 60,80 Q50,85 40,80 Q30,85 20,80 Q15,70 20,60 Q25,50 20,40 Q15,30 20,20 Z" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23leaf)"/></svg>');
             position: relative;
             display: flex;
@@ -203,6 +203,43 @@
             cursor: pointer;
         }
         
+        .platform-info {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .platform-info h4 {
+            color: #2c3e50;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .platform-info ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .platform-info li {
+            color: #6c757d;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .platform-info li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+        
         .btn-signin {
             width: 100%;
             background: #2c3e50;
@@ -216,14 +253,22 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             transition: all 0.2s ease;
-            margin-top: 8px;
+            margin-top: 20px;
+            text-decoration: none;
         }
         
         .btn-signin:hover {
             background: #34495e;
             transform: translateY(-1px);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .btn-signin .google-logo {
+            width: 20px;
+            height: 20px;
         }
         
         .divider {
