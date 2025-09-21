@@ -118,22 +118,16 @@ def transcribe_audio(audio_data, language, model_name="saarika-v1"):
         print(f"Audio file: {converted_path}")
         
         # Call speech-to-text using the SDK
-        response = client.speech.transcribe(
-            audio_file=converted_path,
-            language=language_code,
+        response = client.speech_to_text.transcribe(
+            file=converted_path,
+            language_code=language_code,
             model=model_name
         )
         
         print(f"SDK Response: {response}")
         
-        # The SDK response should contain the transcript
-        if hasattr(response, 'transcript'):
-            transcript = response.transcript
-        elif isinstance(response, dict) and 'transcript' in response:
-            transcript = response['transcript']
-        else:
-            # If response is just a string, use it as transcript
-            transcript = str(response)
+        # The SDK response is a SpeechToTextResponse object with transcript attribute
+        transcript = response.transcript
         
         return {
             'transcript': transcript,
