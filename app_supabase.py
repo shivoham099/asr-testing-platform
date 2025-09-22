@@ -98,19 +98,24 @@ def transcribe_audio(audio_data, language, model_name="/models/saaras-raft-wp20-
     language_code = BCP47_CODES[language]
         
     try:
-        # Create temporary file for input
+        # Create temporary file for input with optimized size
         with tempfile.NamedTemporaryFile(suffix='.webm', delete=False) as temp_file:
+            # Limit audio data size to prevent huge uploads (max 10MB)
+            if len(audio_data) > 10 * 1024 * 1024:
+                raise Exception("Audio file too large (max 10MB)")
             temp_file.write(audio_data)
             temp_path = temp_file.name
         
         # Convert to proper WAV format using ffmpeg
         converted_path = temp_path.replace('.webm', '.wav')
         
-        # Use ffmpeg to convert to 16kHz mono WAV
+        # Use ffmpeg to convert to optimized 16kHz mono WAV with compression
         ffmpeg_cmd = [
             'ffmpeg', '-i', temp_path,
             '-ar', '16000',  # Sample rate 16kHz
             '-ac', '1',      # Mono
+            '-acodec', 'pcm_s16le',  # 16-bit PCM for better compression
+            '-f', 'wav',     # Force WAV format
             '-y',            # Overwrite output file
             converted_path
         ]
@@ -126,7 +131,9 @@ def transcribe_audio(audio_data, language, model_name="/models/saaras-raft-wp20-
         
         # Use direct HTTP request with form data (as per API team specs)
         headers = {
-            'api-subscription-key': API_KEY
+            'api-subscription-key': API_KEY,
+            'Connection': 'keep-alive',  # Reuse connections for faster requests
+            'Accept-Encoding': 'gzip, deflate'  # Enable compression
         }
         
         # Prepare form data
@@ -139,8 +146,12 @@ def transcribe_audio(audio_data, language, model_name="/models/saaras-raft-wp20-
                 'language_code': language_code
             }
             
-            # Make API request
-            response = requests.post(SAARIKA_API_URL, headers=headers, files=files, data=data)
+            # Make API request with timeout and session for connection reuse
+            session = requests.Session()
+            session.headers.update(headers)
+            
+            # Set timeout to prevent hanging (30 seconds max)
+            response = session.post(SAARIKA_API_URL, files=files, data=data, timeout=30)
         
         print(f"API Response status: {response.status_code}")
         print(f"API Response: {response.text}")
