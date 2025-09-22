@@ -57,7 +57,7 @@ ADMIN_EMAILS = [
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # API configuration
-SAARIKA_API_URL = "http://103.207.148.23/saaras_v2_6/audio/transcriptions"
+SAARIKA_API_URL = "https://api.sarvam.ai/speech-to-text"
 API_KEY = os.environ.get('SARVAM_API_KEY')
 
 # Language code mappings
@@ -76,14 +76,14 @@ def is_admin(user_email):
     """Check if user has admin access"""
     return user_email in ADMIN_EMAILS
 
-def transcribe_audio(audio_data, language, model_name="/models/saaras-raft-wp20-base-v2v-v2-chunk_5-main-bs64/1-gpu"):
+def transcribe_audio(audio_data, language, model_name="saarika:v2.5"):
     """
     Transcribe audio using Sarvam API (direct HTTP request as per API team specs)
     
     Args:
         audio_data (bytes): Raw audio data
         language (str): Language of the audio
-        model_name (str): Model version to use (saarika:v2.6 with new endpoint)
+        model_name (str): Model version to use (saarika:v2.5, saarika:v2, saarika:v1, saarika:flash)
         
     Returns:
         dict: Response containing transcription and metadata
