@@ -35,6 +35,7 @@ def get_sample_crops(language):
     
     # Language mapping
     crops_by_language = {
+        'punjabi': punjabi_crops,
         'hindi': hindi_crops,
         'malayalam': malayalam_crops,
         'gujarati': gujarati_crops
@@ -43,3 +44,12 @@ def get_sample_crops(language):
     return crops_by_language.get(language.lower(), [])
 
 
+
+    # Punjabi crop names (50 names)
+    punjabi_crops = [
+        "ਚਾਵਲ", "ਕਣਕ", "ਮੱਕੀ", "ਬਾਜਰਾ", "ਜੌਂ", "ਅਰਹਰ", "ਚਣਾ", "ਮਸੂਰ", "ਰਾਜਮਾ", "ਸੋਇਆ",
+        "ਮੂੰਗਫਲੀ", "ਤਿਲ", "ਸਰ੍ਹੋਂ", "ਸੂਰਜਮੁਖੀ", "ਕਪਾਹ", "ਗੰਨਾ", "ਆਲੂ", "ਪਿਆਜ਼", "ਟਮਾਟਰ", "ਬੈਂਗਣ",
+        "ਮਿਰਚ", "ਖੀਰਾ", "ਕੱਦੂ", "ਤਰਬੂਜ਼", "ਖਰਬੂਜ਼ਾ", "ਅੰਗੂਰ", "ਕੇਲਾ", "ਅੰਬ", "ਸੰਤਰਾ", "ਨਿੰਬੂ",
+        "ਅਨਾਰ", "ਸੇਬ", "ਅਮਰੂਦ", "ਪਪੀਤਾ", "ਨਾਰੀਅਲ", "ਕਾਜੂ", "ਬਦਾਮ", "ਅਖਰੋਟ", "ਪਿਸਤਾ", "ਹਲਦੀ",
+        "ਅਦਰਕ", "ਲਸਣ", "ਧਨੀਆ", "ਜੀਰਾ", "ਹੀਂਗ", "ਕਾਲੀ ਮਿਰਚ", "ਇਲਾਇਚੀ", "ਦਾਲਚੀਨੀ", "ਲੌਂਗ", "ਜਾਇਫਲ"
+    ]

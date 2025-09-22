@@ -66,7 +66,8 @@ BCP47_CODES = {
     "malayalam": "ml-IN", 
     "gujarati": "gu-IN",
     "odia": "or-IN",
-    "english": "en-IN"
+    "english": "en-IN",
+    "punjabi": "pa-IN"
 }
 
 def allowed_file(filename):
@@ -289,7 +290,7 @@ def language_selection(user_id):
         flash('Please log in first', 'error')
         return redirect(url_for('index'))
     
-    languages = ['hindi', 'malayalam', 'gujarati', 'odia', 'english']
+    languages = ['hindi', 'malayalam', 'gujarati', 'odia', 'english', 'punjabi']
     return render_template('language_selection.html', user_id=user_id, languages=languages)
 
 @app.route('/upload_csv/<int:user_id>')
