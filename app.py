@@ -83,7 +83,7 @@ def transcribe_audio(audio_data, language, model_name="saarika:v2.5"):
         
     # Prepare request data as per API team specifications
     files = {
-        'audio': ('audio.wav', audio_data, 'audio/wav')
+        'file': ('audio.wav', audio_data, 'audio/wav')
     }
     
     data = {
