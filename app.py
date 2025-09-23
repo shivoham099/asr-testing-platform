@@ -162,11 +162,16 @@ def login_authorized():
     try:
         # Get authorization code
         code = request.args.get('code')
+        print(f"DEBUG: Received code: {code[:20]}..." if code else "DEBUG: No code received")
         if not code:
             flash('Authorization failed', 'error')
             return redirect(url_for('index'))
         
         # Exchange code for access token
+        print(f"DEBUG: Client ID: {GOOGLE_CLIENT_ID}")
+        print(f"DEBUG: Client Secret: {GOOGLE_CLIENT_SECRET[:10]}..." if GOOGLE_CLIENT_SECRET else "DEBUG: No client secret")
+        print(f"DEBUG: Redirect URI: {GOOGLE_REDIRECT_URI}")
+        
         token_url = 'https://oauth2.googleapis.com/token'
         token_data = {
             'client_id': GOOGLE_CLIENT_ID,
@@ -176,10 +181,15 @@ def login_authorized():
             'redirect_uri': GOOGLE_REDIRECT_URI
         }
         
+        print(f"DEBUG: Making token request to: {token_url}")
         token_response = requests.post(token_url, data=token_data)
+        print(f"DEBUG: Token response status: {token_response.status_code}")
+        print(f"DEBUG: Token response: {token_response.text}")
+        
         token_json = token_response.json()
         
         if 'access_token' not in token_json:
+            print(f"DEBUG: No access token in response: {token_json}")
             flash('Failed to get access token', 'error')
             return redirect(url_for('index'))
         
