@@ -1,1 +1,1 @@
-web: python app_azure.py
+web: python app.py
