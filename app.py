@@ -88,7 +88,7 @@ def transcribe_audio(audio_data, language, model_name="saarika:v2.5"):
     
     data = {
         'model': model_name,
-        'language': language_code
+        'language_code': language_code
     }
     
     headers = {
