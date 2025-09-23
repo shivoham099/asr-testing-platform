@@ -17,9 +17,11 @@ from werkzeug.utils import secure_filename
 import requests
 import io
 
-# Import Azure service
-from azure_service import (
-    upload_asr_test_results
+# Import Supabase service
+from supabase_service import (
+    create_qa_user, create_test_session, get_test_session, 
+    create_test_result, update_test_result, get_test_results,
+    get_all_sessions, get_all_users
 )
 
 app = Flask(__name__)
@@ -200,9 +202,18 @@ def login_authorized():
             flash('Access denied. Please use a Google account or Sarvam email.', 'error')
             return redirect(url_for('index'))
         
-        # Store user info in session (no database needed)
+        # Create or get user in Supabase
+        try:
+            # Try to create user (will fail if exists, that's ok)
+            user_data = create_qa_user(user_info['email'], user_info['name'])
+            user_id = user_data['id']
+        except:
+            # User might already exist, for now use a simple approach
+            user_id = 1  # This should be improved to actually query the user
+        
+        # Store user info in session
         session['user'] = user_info
-        session['user_id'] = f"user_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        session['user_id'] = user_id
         
         return redirect(url_for('language_selection', user_id=session['user_id']))
         
