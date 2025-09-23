@@ -74,12 +74,12 @@ def transcribe_audio(audio_data, language, model_name="saarika:v2.5"):
     """
     if not API_KEY:
         raise ValueError("SARVAM_API_KEY environment variable not set")
-        
-        if language not in BCP47_CODES:
-            raise ValueError(f"Unsupported language: {language}. Supported: {list(BCP47_CODES.keys())}")
-        
-        # Get language code
-        language_code = BCP47_CODES[language]
+    
+    if language not in BCP47_CODES:
+        raise ValueError(f"Unsupported language: {language}. Supported: {list(BCP47_CODES.keys())}")
+    
+    # Get language code
+    language_code = BCP47_CODES[language]
         
     # Prepare request data as per API team specifications
     files = {
