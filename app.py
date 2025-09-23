@@ -49,8 +49,8 @@ model_name = "saarika:v2.5"
 
 # Language codes for Sarvam API
 BCP47_CODES = {
-    "hindi": "hi-IN",
-    "malayalam": "ml-IN", 
+    "hindi": "hi-IN", 
+    "malayalam": "ml-IN",
     "gujarati": "gu-IN",
     "odia": "or-IN",
     "english": "en-IN",
@@ -74,13 +74,13 @@ def transcribe_audio(audio_data, language, model_name="saarika:v2.5"):
     """
     if not API_KEY:
         raise ValueError("SARVAM_API_KEY environment variable not set")
-    
-    if language not in BCP47_CODES:
-        raise ValueError(f"Unsupported language: {language}. Supported: {list(BCP47_CODES.keys())}")
-    
-    # Get language code
-    language_code = BCP47_CODES[language]
-    
+        
+        if language not in BCP47_CODES:
+            raise ValueError(f"Unsupported language: {language}. Supported: {list(BCP47_CODES.keys())}")
+        
+        # Get language code
+        language_code = BCP47_CODES[language]
+        
     # Prepare request data as per API team specifications
     files = {
         'audio': ('audio.wav', audio_data, 'audio/wav')
@@ -205,7 +205,7 @@ def login_authorized():
         session['user_id'] = f"user_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         
         return redirect(url_for('language_selection', user_id=session['user_id']))
-        
+            
     except Exception as e:
         flash(f'Login failed: {str(e)}', 'error')
         return redirect(url_for('index'))
@@ -231,8 +231,8 @@ def upload_csv(user_id):
     """CSV upload page"""
     if 'user' not in session or session['user_id'] != user_id:
         flash('Please log in first', 'error')
-        return redirect(url_for('index'))
-    
+    return redirect(url_for('index'))
+
     language = request.args.get('language', 'hindi')
     return render_template('upload_csv.html', user_id=user_id, language=language)
 
