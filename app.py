@@ -19,7 +19,7 @@ import io
 
 # Import Azure service
 from azure_service import (
-    upload_asr_test_results, upload_session_summary
+    upload_asr_test_results
 )
 
 app = Flask(__name__)
