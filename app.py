@@ -213,7 +213,7 @@ def login_authorized():
         
         # Store user info in session (session-based storage)
         session['user'] = user_info
-        session['user_id'] = f"user_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        session['user_id'] = int(datetime.now().strftime('%Y%m%d%H%M%S'))
         
         return redirect(url_for('language_selection', user_id=session['user_id']))
             
