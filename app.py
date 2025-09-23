@@ -396,7 +396,7 @@ def submit_recording():
         else:
             return jsonify({'error': f'Recording submission failed: {error_msg}'}), 500
 
-@app.route('/results/<int:session_id>')
+@app.route('/results/<session_id>')
 def results(session_id):
     """Display test results"""
     # Get results from session
@@ -465,12 +465,12 @@ def results(session_id):
                          moderate_count=moderate_count,
                          poor_count=poor_count)
 
-@app.route('/end_session/<int:session_id>')
+@app.route('/end_session/<session_id>')
 def end_session(session_id):
     """End testing session and redirect to results"""
     return redirect(url_for('results', session_id=session_id))
 
-@app.route('/download_csv/<int:session_id>')
+@app.route('/download_csv/<session_id>')
 def download_csv(session_id):
     """Download results as CSV and upload to Azure"""
     # Get results from session
