@@ -1,5 +1,6 @@
 import os
-import pandas as pd
+import csv
+import io
 from azure.storage.blob import BlobServiceClient, ContentSettings
 from typing import Optional
 import logging
@@ -83,14 +84,14 @@ def upload_csv_to_blob(csv_file_path: str, folder_name: str = "ASR Testing Dump"
         raise
 
 
-def upload_dataframe_to_blob(dataframe: pd.DataFrame, filename: str, 
+def upload_csv_data_to_blob(csv_data: str, filename: str, 
                            folder_name: str = "ASR Testing Dump", 
                            add_timestamp: bool = False) -> str:
     """
-    Uploads a pandas DataFrame as CSV to Azure Blob Storage.
+    Uploads CSV data as string to Azure Blob Storage.
     
     Args:
-        dataframe (pd.DataFrame): DataFrame to upload
+        csv_data (str): CSV data as string
         filename (str): Filename for the CSV (should include .csv extension)
         folder_name (str): Folder name in the blob container (default: "ASR Testing Dump")
         add_timestamp (bool): Whether to add timestamp to filename (default: False)
@@ -127,11 +128,8 @@ def upload_dataframe_to_blob(dataframe: pd.DataFrame, filename: str,
         container_client = blob_service_client.get_container_client(container_name)
         blob_client = container_client.get_blob_client(blob_path)
         
-        # Convert DataFrame to CSV string
-        csv_data = dataframe.to_csv(index=False)
-        
         # Upload CSV data
-        logger.info(f"Uploading DataFrame to {blob_path}")
+        logger.info(f"Uploading CSV data to {blob_path}")
         
         blob_client.upload_blob(
             csv_data,
@@ -142,13 +140,13 @@ def upload_dataframe_to_blob(dataframe: pd.DataFrame, filename: str,
         # Generate URL
         url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_path}"
         
-        logger.info(f"Upload successful! DataFrame uploaded to: {blob_path}")
+        logger.info(f"Upload successful! CSV data uploaded to: {blob_path}")
         logger.info(f"URL: {url}")
         
         return url
         
     except Exception as e:
-        logger.error(f"Error uploading DataFrame: {e}")
+        logger.error(f"Error uploading CSV data: {e}")
         raise
 
 
@@ -167,22 +165,38 @@ def upload_asr_test_results(test_results: list, user_email: str, language: str, 
         str: URL of uploaded CSV file
     """
     try:
-        # Create DataFrame from test results
-        df = pd.DataFrame(test_results)
+        # Create CSV data manually
+        output = io.StringIO()
+        writer = csv.writer(output)
         
-        # Add metadata columns
-        df['user_email'] = user_email
-        df['language'] = language
-        df['session_id'] = session_id
-        df['upload_timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # Write header
+        writer.writerow(['user_email', 'language', 'session_id', 'crop_name', 'attempt_number', 'transcript', 'keyword_detected', 'timestamp', 'upload_timestamp'])
+        
+        # Write data
+        upload_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        for result in test_results:
+            writer.writerow([
+                user_email,
+                language,
+                session_id,
+                result.get('crop_name', ''),
+                result.get('attempt_number', ''),
+                result.get('transcript', ''),
+                result.get('keyword_detected', ''),
+                result.get('timestamp', ''),
+                upload_timestamp
+            ])
+        
+        csv_data = output.getvalue()
+        output.close()
         
         # Generate filename
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"asr_test_results_{user_email}_{language}_{timestamp}.csv"
         
         # Upload to Azure
-        url = upload_dataframe_to_blob(
-            dataframe=df,
+        url = upload_csv_data_to_blob(
+            csv_data=csv_data,
             filename=filename,
             folder_name="ASR Testing Dump",
             add_timestamp=False  # We already added timestamp to filename
