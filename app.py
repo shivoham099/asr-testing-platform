@@ -149,6 +149,35 @@ def check_keyword_match(transcript, crop_name):
     # For single words, check if it's a substring
     return crop_lower in transcript_lower
 
+def create_csv_content(results_data, user_email, language, session_id):
+    """Create CSV content from results data"""
+    import csv
+    import io
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Write header
+    writer.writerow([
+        'QA Name', 'Language', 'Session ID', 'Crop Name', 'Attempt Number',
+        'Transcription', 'Keyword Detected', 'Timestamp'
+    ])
+    
+    # Write data rows
+    for result in results_data:
+        writer.writerow([
+            user_email,
+            language,
+            session_id,
+            result['crop_name'],
+            result['attempt_number'],
+            result['transcript'],
+            'Yes' if result['keyword_detected'] else 'No',
+            result['timestamp']
+        ])
+    
+    return output.getvalue()
+
 @app.route('/')
 def index():
     """Login page"""
@@ -481,7 +510,7 @@ def download_csv(session_id):
         return redirect(url_for('index'))
     
     try:
-        # Upload results to Azure
+        # Upload results to Azure first
         user_email = session.get('user', {}).get('email', 'unknown@example.com')
         language = session.get('current_language', 'hindi')
         
@@ -492,11 +521,28 @@ def download_csv(session_id):
             session_id=str(session_id)
         )
         
-        flash(f'Results uploaded to Azure successfully! URL: {azure_url}', 'success')
-        return redirect(url_for('results', session_id=session_id))
+        # Create CSV content for download
+        csv_content = create_csv_content(results_data, user_email, language, session_id)
+        
+        # Create response with CSV file
+        output = io.StringIO()
+        output.write(csv_content)
+        output.seek(0)
+        
+        # Create filename
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f'asr_test_results_{user_email}_{language}_{timestamp}.csv'
+        
+        # Return CSV file for download
+        return send_file(
+            io.BytesIO(output.getvalue().encode('utf-8')),
+            mimetype='text/csv',
+            as_attachment=True,
+            download_name=filename
+        )
         
     except Exception as e:
-        flash(f'Failed to upload results to Azure: {str(e)}', 'error')
+        flash(f'Failed to generate CSV: {str(e)}', 'error')
         return redirect(url_for('results', session_id=session_id))
 
 @app.route('/qa_guide')
