@@ -152,7 +152,9 @@ def check_keyword_match(transcript, crop_name):
 @app.route('/')
 def index():
     """Login page"""
-    return render_template('index.html')
+    return render_template('index.html', 
+                         google_client_id=GOOGLE_CLIENT_ID,
+                         redirect_uri=GOOGLE_REDIRECT_URI)
 
 @app.route('/login/authorized')
 def login_authorized():

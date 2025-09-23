@@ -30,7 +30,7 @@
                 </ul>
             </div>
             
-            <a href="{{ url_for('login_authorized') }}" class="btn-signin">
+            <a href="https://accounts.google.com/oauth/authorize?client_id={{ google_client_id }}&redirect_uri={{ redirect_uri }}&scope=openid%20email%20profile&response_type=code" class="btn-signin">
                 <div class="google-logo"></div>
                 Continue with Google
             </a>
