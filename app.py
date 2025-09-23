@@ -299,7 +299,7 @@ def process_csv():
     flash('Invalid file type. Please upload a CSV file.', 'error')
     return redirect(url_for('upload_csv', user_id=user_id, language=language))
 
-@app.route('/testing/<int:session_id>/<int:crop_index>')
+@app.route('/testing/<session_id>/<int:crop_index>')
 def testing(session_id, crop_index):
     """Testing page for recording audio"""
     # Get session info from Flask session
