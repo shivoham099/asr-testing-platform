@@ -242,7 +242,7 @@ def upload_csv(user_id):
     """CSV upload page"""
     if 'user' not in session or session['user_id'] != user_id:
         flash('Please log in first', 'error')
-        return redirect(url_for('index'))
+    return redirect(url_for('index'))
 
     language = request.args.get('language', 'hindi')
     return render_template('upload_csv.html', user_id=user_id, language=language)

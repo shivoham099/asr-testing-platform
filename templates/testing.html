@@ -123,7 +123,7 @@
 let mediaRecorder;
 let audioChunks = [];
 let currentAttempt = 1;
-let sessionId = {{ session_id }};
+let sessionId = "{{ session_id }}";
 let cropName = "{{ current_crop }}";
 let cropIndex = {{ crop_index }};
 
@@ -143,7 +143,9 @@ submitBtn.addEventListener('click', submitRecording);
 recordAgainBtn.addEventListener('click', recordAgain);
 
 async function startRecording() {
+    console.log('Start recording clicked');
     try {
+        console.log('Requesting microphone access...');
         const stream = await navigator.mediaDevices.getUserMedia({ 
             audio: {
                 sampleRate: 16000,
@@ -152,6 +154,7 @@ async function startRecording() {
                 noiseSuppression: true
             }
         });
+        console.log('Microphone access granted');
         
         // Try to use WAV format, fallback to webm
         let mimeType = 'audio/wav';
@@ -182,7 +185,8 @@ async function startRecording() {
         recordingIndicator.style.display = 'block';
         
     } catch (error) {
-        alert('Error accessing microphone: ' + error.message);
+        console.error('Microphone access error:', error);
+        alert('Error accessing microphone: ' + error.message + '\n\nPlease make sure you have granted microphone permissions to this website.');
     }
 }
 
