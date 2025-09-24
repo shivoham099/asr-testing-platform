@@ -40,12 +40,12 @@
                 
                 <div class="alert alert-warning text-center">
                     <h5><i class="fas fa-seedling"></i> Crop Name: <strong>{{ current_crop }}</strong></h5>
-                    <p class="mb-0">You need to record 5 audio samples using this crop name in sentences.</p>
+                    <p class="mb-0">You need to record 3 audio samples using this crop name in sentences.</p>
                 </div>
                 
                 <div id="recording-interface" class="text-center">
                     <div class="mb-4">
-                        <h6>Recording Attempt: <span id="attempt-number">1</span> / 5</h6>
+                        <h6>Recording Attempt: <span id="attempt-number">1</span> / 3</h6>
                     </div>
                     
                     <div class="mb-4">
@@ -106,8 +106,8 @@
                     <li>Click "Start Recording" and speak a sentence that includes the crop name: <strong>{{ current_crop }}</strong></li>
                     <li>Click "Stop Recording" when you're done</li>
                     <li>Listen to your recording and click "Submit Recording" if satisfied</li>
-                    <li>Repeat this process 5 times with different sentences</li>
-                    <li>After 5 recordings, you'll move to the next crop name</li>
+                    <li>Repeat this process 3 times with different sentences</li>
+                    <li>After 3 recordings, you'll move to the next crop name</li>
                 </ol>
                 <p class="text-muted">
                     <strong>Example sentences:</strong> "I planted {{ current_crop }} in my field", "The {{ current_crop }} crop is growing well", etc.
@@ -258,15 +258,15 @@ async function submitRecording() {
             
             // Move to next attempt or next crop
             currentAttempt++;
-            if (currentAttempt <= 5) {
+            if (currentAttempt <= 3) {
                 attemptNumber.textContent = currentAttempt;
-                console.log(`Continuing with attempt ${currentAttempt}/5`);
+                console.log(`Continuing with attempt ${currentAttempt}/3`);
                 // Increased time so users can note down results
                 setTimeout(() => {
                     recordAgain();
                 }, 8000); // Increased from 2 seconds to 8 seconds
             } else {
-                console.log('All 5 attempts completed, moving to next crop');
+                console.log('All 3 attempts completed, moving to next crop');
                 // All attempts done, move to next crop - give more time to review
                 setTimeout(() => {
                     if (cropIndex + 1 < {{ total_crops }}) {

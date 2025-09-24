@@ -550,7 +550,7 @@ def results(session_id):
                 'detected': attempt['keyword_detected']
             })
         
-        # Count by performance level
+        # Count by performance level (updated for 3 attempts)
         if correct_count >= 3:
             well_pronounced_count += 1
         elif correct_count == 2:
