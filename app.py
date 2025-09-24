@@ -283,6 +283,9 @@ def upload_csv(user_id):
         flash('Please log in first', 'error')
         return redirect(url_for('index'))
 
+    # Ensure session persists
+    session.permanent = True
+    
     language = request.args.get('language', 'hindi')
     return render_template('upload_csv.html', user_id=user_id, language=language)
 
@@ -291,6 +294,19 @@ def process_csv():
     """Process uploaded CSV file"""
     user_id = request.form.get('user_id')
     language = request.form.get('language')
+    
+    # Check if user is logged in
+    app.logger.info(f"DEBUG: process_csv - user_id from form: {user_id}")
+    app.logger.info(f"DEBUG: process_csv - session user_id: {session.get('user_id')}")
+    app.logger.info(f"DEBUG: process_csv - session user: {session.get('user')}")
+    
+    if 'user' not in session or session['user_id'] != int(user_id):
+        app.logger.warning(f"DEBUG: process_csv - Authentication failed for user_id {user_id}")
+        flash('Please log in first', 'error')
+        return redirect(url_for('index'))
+    
+    # Ensure session persists
+    session.permanent = True
     
     if 'csv_file' not in request.files:
         flash('No file selected', 'error')
