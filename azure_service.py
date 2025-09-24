@@ -208,6 +208,71 @@ def upload_single_test_result(test_result: dict, user_email: str, language: str,
         logger.error(f"Error uploading single ASR test result: {e}")
         raise
 
+def recover_session_from_azure(user_email: str, language: str, session_id: str) -> list:
+    """
+    Recover session data from Azure when session is lost.
+    This is a recovery mechanism for lost session data.
+    
+    Args:
+        user_email (str): User's email address
+        language (str): Test language
+        session_id (str): Session identifier
+    
+    Returns:
+        list: List of recovered test results
+    """
+    try:
+        # Azure Storage Configuration
+        account_name = os.environ.get('AZURE_STORAGE_ACCOUNT_NAME', 'sarvamweb')
+        container_name = os.environ.get('AZURE_STORAGE_CONTAINER_NAME', 'whatsappmedia')
+        account_key = os.environ.get('AZURE_STORAGE_ACCOUNT_KEY')
+        
+        if not account_key:
+            logger.error("AZURE_STORAGE_ACCOUNT_KEY not set - cannot recover from Azure")
+            return []
+        
+        connection_string = f"DefaultEndpointsProtocol=https;AccountName={account_name};AccountKey={account_key};EndpointSuffix=core.windows.net"
+        
+        # Initialize Azure clients
+        blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+        container_client = blob_service_client.get_container_client(container_name)
+        
+        # List blobs for this session
+        blob_prefix = f"ASR Testing Dump/asr_test_results_{user_email}_{language}_{session_id}"
+        blobs = container_client.list_blobs(name_starts_with=blob_prefix)
+        
+        recovered_results = []
+        for blob in blobs:
+            try:
+                # Download and parse CSV
+                blob_client = container_client.get_blob_client(blob.name)
+                csv_data = blob_client.download_blob().readall().decode('utf-8')
+                
+                # Parse CSV data
+                csv_reader = csv.DictReader(io.StringIO(csv_data))
+                for row in csv_reader:
+                    if row.get('session_id') == session_id:
+                        recovered_results.append({
+                            'crop_name': row.get('crop_name', ''),
+                            'attempt_number': int(row.get('attempt_number', 1)),
+                            'transcript': row.get('transcript', ''),
+                            'keyword_detected': row.get('keyword_detected', '').lower() == 'true',
+                            'timestamp': row.get('timestamp', '')
+                        })
+                
+                logger.info(f"Recovered {len(recovered_results)} results from Azure blob: {blob.name}")
+                
+            except Exception as e:
+                logger.error(f"Error recovering from blob {blob.name}: {e}")
+                continue
+        
+        logger.info(f"Total recovered results: {len(recovered_results)}")
+        return recovered_results
+        
+    except Exception as e:
+        logger.error(f"Error recovering session from Azure: {e}")
+        return []
+
 def upload_asr_test_results(test_results: list, user_email: str, language: str, session_id: str) -> str:
     """
     Upload ASR test results to Azure Blob Storage.

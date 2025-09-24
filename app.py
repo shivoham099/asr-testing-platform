@@ -20,7 +20,8 @@ import io
 # Import Azure service
 from azure_service import (
     upload_asr_test_results,
-    upload_single_test_result
+    upload_single_test_result,
+    recover_session_from_azure
 )
 
 app = Flask(__name__)
@@ -464,6 +465,32 @@ def results(session_id):
     app.logger.info(f"DEBUG: Results page - session_id: {session_id}")
     app.logger.info(f"DEBUG: Results page - results_data length: {len(results_data)}")
     app.logger.info(f"DEBUG: Results page - results_data: {results_data}")
+    
+    # EMERGENCY RECOVERY: If session data is lost, try to recover from Azure
+    if not results_data:
+        app.logger.warning(f"EMERGENCY: No session data found for session {session_id}")
+        app.logger.info("Attempting to recover data from Azure...")
+        
+        try:
+            user_email = session.get('user', {}).get('email', 'unknown@example.com')
+            language = session.get('current_language', 'hindi')
+            
+            app.logger.info(f"Recovering for user: {user_email}, language: {language}, session: {session_id}")
+            
+            # Try to recover from Azure
+            recovered_data = recover_session_from_azure(user_email, language, session_id)
+            
+            if recovered_data:
+                app.logger.info(f"SUCCESS: Recovered {len(recovered_data)} results from Azure!")
+                results_data = recovered_data
+                # Restore to session for future access
+                session[f'results_{session_id}'] = results_data
+                session.permanent = True
+            else:
+                app.logger.error("FAILED: No data recovered from Azure")
+                
+        except Exception as e:
+            app.logger.error(f"Recovery failed: {str(e)}")
     
     if not results_data:
         return render_template('results.html', 
