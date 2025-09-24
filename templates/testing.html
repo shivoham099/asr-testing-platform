@@ -261,19 +261,20 @@ async function submitRecording() {
             if (currentAttempt <= 5) {
                 attemptNumber.textContent = currentAttempt;
                 console.log(`Continuing with attempt ${currentAttempt}/5`);
+                // Increased time so users can note down results
                 setTimeout(() => {
                     recordAgain();
-                }, 2000);
+                }, 8000); // Increased from 2 seconds to 8 seconds
             } else {
                 console.log('All 5 attempts completed, moving to next crop');
-                // All attempts done, move to next crop
+                // All attempts done, move to next crop - give more time to review
                 setTimeout(() => {
                     if (cropIndex + 1 < {{ total_crops }}) {
                         window.location.href = `/testing/{{ session_id }}/${cropIndex + 1}`;
                     } else {
                         window.location.href = `/results/{{ session_id }}`;
                     }
-                }, 3000);
+                }, 10000); // Increased from 3 seconds to 10 seconds
             }
         } else {
             alert('Error: ' + result.error);

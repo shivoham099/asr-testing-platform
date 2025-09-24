@@ -427,19 +427,24 @@ def submit_recording():
         app.logger.info(f"DEBUG: Stored result for {crop_name}, attempt {attempt_number}")
         app.logger.info(f"DEBUG: Total results in session: {len(session[f'results_{session_id}'])}")
         app.logger.info(f"DEBUG: Session results: {session[f'results_{session_id}']}")
+        app.logger.info(f"DEBUG: Session ID: {session_id}")
+        app.logger.info(f"DEBUG: User email: {session.get('user', {}).get('email', 'unknown')}")
+        app.logger.info(f"DEBUG: Language: {language}")
         
         # IMMEDIATELY save to Azure to prevent data loss
         try:
             user_email = session.get('user', {}).get('email', 'unknown@example.com')
+            app.logger.info(f"DEBUG: Attempting Azure upload for {user_email}, {language}, {session_id}")
             azure_url = upload_single_test_result(
                 test_result=result,
                 user_email=user_email,
                 language=language,
                 session_id=session_id
             )
-            app.logger.info(f"Result saved to Azure: {azure_url}")
+            app.logger.info(f"SUCCESS: Result saved to Azure: {azure_url}")
         except Exception as e:
-            app.logger.error(f"Failed to save result to Azure: {str(e)}")
+            app.logger.error(f"FAILED: Azure upload failed: {str(e)}")
+            app.logger.error(f"DEBUG: Azure upload error details: {type(e).__name__}: {str(e)}")
             # Don't fail the request if Azure save fails, but log the error
         
         return jsonify({
@@ -615,6 +620,43 @@ def qa_guide():
 def csv_format_guide():
     """CSV Format Guide"""
     return render_template('csv_format_guide.html')
+
+@app.route('/debug_azure')
+def debug_azure():
+    """Debug Azure connection"""
+    try:
+        # Test Azure connection
+        user_email = session.get('user', {}).get('email', 'test@example.com')
+        language = session.get('current_language', 'hindi')
+        session_id = 'debug_test'
+        
+        test_result = {
+            'crop_name': 'test_crop',
+            'attempt_number': 1,
+            'transcript': 'test transcript',
+            'keyword_detected': True,
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+        azure_url = upload_single_test_result(
+            test_result=test_result,
+            user_email=user_email,
+            language=language,
+            session_id=session_id
+        )
+        
+        return jsonify({
+            'success': True,
+            'azure_url': azure_url,
+            'message': 'Azure connection working'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'message': 'Azure connection failed'
+        })
 
 if __name__ == '__main__':
     # Create uploads directory if it doesn't exist
