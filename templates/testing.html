@@ -230,6 +230,9 @@ async function submitRecording() {
     formData.append('crop_name', cropName);
     formData.append('attempt_number', currentAttempt);
     
+    // DEBUG: Log what we're sending
+    console.log(`DEBUG: Sending attempt ${currentAttempt} for crop ${cropName}`);
+    
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
     
@@ -250,14 +253,19 @@ async function submitRecording() {
             
             resultsDisplay.style.display = 'block';
             
+            // DEBUG: Log current attempt
+            console.log(`Current attempt: ${currentAttempt}, Next attempt: ${currentAttempt + 1}`);
+            
             // Move to next attempt or next crop
             currentAttempt++;
             if (currentAttempt <= 5) {
                 attemptNumber.textContent = currentAttempt;
+                console.log(`Continuing with attempt ${currentAttempt}/5`);
                 setTimeout(() => {
                     recordAgain();
                 }, 2000);
             } else {
+                console.log('All 5 attempts completed, moving to next crop');
                 // All attempts done, move to next crop
                 setTimeout(() => {
                     if (cropIndex + 1 < {{ total_crops }}) {

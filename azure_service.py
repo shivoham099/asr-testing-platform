@@ -151,6 +151,63 @@ def upload_csv_data_to_blob(csv_data: str, filename: str,
 
 
 # ASR Testing specific functions
+def upload_single_test_result(test_result: dict, user_email: str, language: str, session_id: str) -> str:
+    """
+    Upload a single ASR test result to Azure Blob Storage immediately.
+    This ensures results are saved even if session is lost.
+    
+    Args:
+        test_result (dict): Single test result dictionary
+        user_email (str): User's email address
+        language (str): Test language
+        session_id (str): Session identifier
+    
+    Returns:
+        str: URL of uploaded CSV file
+    """
+    try:
+        # Create CSV data for single result
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Write header
+        writer.writerow(['user_email', 'language', 'session_id', 'crop_name', 'attempt_number', 'transcript', 'keyword_detected', 'timestamp', 'upload_timestamp'])
+        
+        # Write single result
+        upload_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        writer.writerow([
+            user_email,
+            language,
+            session_id,
+            test_result.get('crop_name', ''),
+            test_result.get('attempt_number', ''),
+            test_result.get('transcript', ''),
+            test_result.get('keyword_detected', ''),
+            test_result.get('timestamp', ''),
+            upload_timestamp
+        ])
+        
+        csv_data = output.getvalue()
+        output.close()
+        
+        # Generate filename for this session
+        filename = f"asr_test_results_{user_email}_{language}_{session_id}.csv"
+        
+        # Upload to Azure
+        url = upload_csv_data_to_blob(
+            csv_data=csv_data,
+            filename=filename,
+            folder_name="ASR Testing Dump",
+            add_timestamp=False
+        )
+        
+        logger.info(f"Single ASR test result uploaded successfully: {url}")
+        return url
+        
+    except Exception as e:
+        logger.error(f"Error uploading single ASR test result: {e}")
+        raise
+
 def upload_asr_test_results(test_results: list, user_email: str, language: str, session_id: str) -> str:
     """
     Upload ASR test results to Azure Blob Storage.

@@ -19,11 +19,18 @@ import io
 
 # Import Azure service
 from azure_service import (
-    upload_asr_test_results
+    upload_asr_test_results,
+    upload_single_test_result
 )
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'  # Change this in production
+
+# Configure session to be more persistent
+app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
+app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 # Configuration
 UPLOAD_FOLDER = 'uploads'
@@ -243,6 +250,7 @@ def login_authorized():
         # Store user info in session (session-based storage)
         session['user'] = user_info
         session['user_id'] = int(datetime.now().strftime('%Y%m%d%H%M%S'))
+        session.permanent = True  # Make session persistent
         
         return redirect(url_for('language_selection', user_id=session['user_id']))
             
@@ -411,6 +419,26 @@ def submit_recording():
         }
         
         session[f'results_{session_id}'].append(result)
+        session.permanent = True  # Ensure session persists
+        
+        # DEBUG: Log session storage
+        app.logger.info(f"DEBUG: Stored result for {crop_name}, attempt {attempt_number}")
+        app.logger.info(f"DEBUG: Total results in session: {len(session[f'results_{session_id}'])}")
+        app.logger.info(f"DEBUG: Session results: {session[f'results_{session_id}']}")
+        
+        # IMMEDIATELY save to Azure to prevent data loss
+        try:
+            user_email = session.get('user', {}).get('email', 'unknown@example.com')
+            azure_url = upload_single_test_result(
+                test_result=result,
+                user_email=user_email,
+                language=language,
+                session_id=session_id
+            )
+            app.logger.info(f"Result saved to Azure: {azure_url}")
+        except Exception as e:
+            app.logger.error(f"Failed to save result to Azure: {str(e)}")
+            # Don't fail the request if Azure save fails, but log the error
         
         return jsonify({
             'success': True,
@@ -430,6 +458,11 @@ def results(session_id):
     """Display test results"""
     # Get results from session
     results_data = session.get(f'results_{session_id}', [])
+    
+    # DEBUG: Log what's in session
+    app.logger.info(f"DEBUG: Results page - session_id: {session_id}")
+    app.logger.info(f"DEBUG: Results page - results_data length: {len(results_data)}")
+    app.logger.info(f"DEBUG: Results page - results_data: {results_data}")
     
     if not results_data:
         return render_template('results.html', 
