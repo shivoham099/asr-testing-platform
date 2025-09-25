@@ -56,14 +56,19 @@ API_KEY = os.environ.get('SARVAM_API_KEY')
 SAARIKA_API_URL = "https://api.sarvam.ai/speech-to-text"
 model_name = "saarika:v2.5"
 
-# Language codes for Sarvam API
+# Language codes for Sarvam API (matching API requirements)
 BCP47_CODES = {
     "hindi": "hi-IN", 
     "malayalam": "ml-IN",
     "gujarati": "gu-IN",
-    "odia": "or-IN",
+    "odia": "od-IN",  # Fixed: API expects 'od-IN', not 'or-IN'
     "english": "en-IN",
-    "punjabi": "pa-IN"
+    "punjabi": "pa-IN",
+    "bengali": "bn-IN",  # Added: Bengali support
+    "kannada": "kn-IN",  # Added: Kannada support
+    "marathi": "mr-IN",  # Added: Marathi support
+    "tamil": "ta-IN",    # Added: Tamil support
+    "telugu": "te-IN"    # Added: Telugu support
 }
 
 def allowed_file(filename):
@@ -273,7 +278,7 @@ def language_selection(user_id):
         flash('Please log in first', 'error')
         return redirect(url_for('index'))
     
-    languages = ['hindi', 'malayalam', 'gujarati', 'odia', 'english', 'punjabi']
+    languages = ['hindi', 'malayalam', 'gujarati', 'odia', 'english', 'punjabi', 'bengali', 'kannada', 'marathi', 'tamil', 'telugu']
     return render_template('language_selection.html', user_id=user_id, languages=languages)
 
 @app.route('/upload_csv/<int:user_id>')
