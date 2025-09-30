@@ -83,12 +83,12 @@ def transcribe_audio(audio_data, language, model_name="saarika:v2.5"):
     """
     if not API_KEY:
         raise ValueError("SARVAM_API_KEY environment variable not set")
-    
-    if language not in BCP47_CODES:
-        raise ValueError(f"Unsupported language: {language}. Supported: {list(BCP47_CODES.keys())}")
-    
-    # Get language code
-    language_code = BCP47_CODES[language]
+        
+        if language not in BCP47_CODES:
+            raise ValueError(f"Unsupported language: {language}. Supported: {list(BCP47_CODES.keys())}")
+        
+        # Get language code
+        language_code = BCP47_CODES[language]
         
     # Prepare request data as per API team specifications
     files = {
@@ -299,9 +299,18 @@ def process_csv():
     app.logger.info(f"DEBUG: process_csv - user_id from form: {user_id}")
     app.logger.info(f"DEBUG: process_csv - session user_id: {session.get('user_id')}")
     app.logger.info(f"DEBUG: process_csv - session user: {session.get('user')}")
+    app.logger.info(f"DEBUG: process_csv - session keys: {list(session.keys())}")
     
-    if 'user' not in session or session['user_id'] != int(user_id):
-        app.logger.warning(f"DEBUG: process_csv - Authentication failed for user_id {user_id}")
+    # More lenient session check - just check if user exists
+    if 'user' not in session:
+        app.logger.warning(f"DEBUG: process_csv - No user in session")
+        flash('Please log in first', 'error')
+    return redirect(url_for('index'))
+
+    # Use session user_id instead of form user_id
+    session_user_id = session.get('user_id')
+    if not session_user_id:
+        app.logger.warning(f"DEBUG: process_csv - No user_id in session")
         flash('Please log in first', 'error')
         return redirect(url_for('index'))
     
@@ -310,12 +319,12 @@ def process_csv():
     
     if 'csv_file' not in request.files:
         flash('No file selected', 'error')
-        return redirect(url_for('upload_csv', user_id=user_id, language=language))
+        return redirect(url_for('upload_csv', user_id=session_user_id, language=language))
     
     file = request.files['csv_file']
     if file.filename == '':
         flash('No file selected', 'error')
-        return redirect(url_for('upload_csv', user_id=user_id, language=language))
+        return redirect(url_for('upload_csv', user_id=session_user_id, language=language))
     
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
@@ -332,11 +341,11 @@ def process_csv():
                         crop_names.append(row[0].strip())
         except Exception as e:
             flash(f'Error reading CSV file: {str(e)}', 'error')
-            return redirect(url_for('upload_csv', user_id=user_id, language=language))
+            return redirect(url_for('upload_csv', user_id=session_user_id, language=language))
         
         if not crop_names:
             flash('No crop names found in CSV file', 'error')
-            return redirect(url_for('upload_csv', user_id=user_id, language=language))
+            return redirect(url_for('upload_csv', user_id=session_user_id, language=language))
         
         # Create test session (generate unique session ID)
         session_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -352,7 +361,7 @@ def process_csv():
         return redirect(url_for('testing', session_id=session_id, crop_index=0))
     
     flash('Invalid file type. Please upload a CSV file.', 'error')
-    return redirect(url_for('upload_csv', user_id=user_id, language=language))
+    return redirect(url_for('upload_csv', user_id=session_user_id, language=language))
 
 @app.route('/testing/<session_id>/<int:crop_index>')
 def testing(session_id, crop_index):
