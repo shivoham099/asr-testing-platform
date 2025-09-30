@@ -51,10 +51,10 @@ GOOGLE_REDIRECT_URI = 'https://asr-testing-platform.onrender.com/login/authorize
 # Allowed email domains (All Google accounts + Sarvam team)
 ALLOWED_DOMAINS = ['gmail.com', 'googlemail.com', 'google.com', 'sarvam.ai']  # Allow all Google accounts + Sarvam
 
-# Sarvam API Configuration
+# Saaras API Configuration
 API_KEY = os.environ.get('SARVAM_API_KEY')
-SAARIKA_API_URL = "https://api.sarvam.ai/speech-to-text"
-model_name = "saarika:v2.5"
+SAARAS_API_URL = "http://103.207.148.23/saaras_v2_6/audio/transcriptions"
+model_name = "/models/saaras-raft-wp20-base-v2v-v2-chunk_5-main-bs64/1-gpu"
 
 # Language codes for Sarvam API
 BCP47_CODES = {
@@ -105,9 +105,9 @@ def transcribe_audio(audio_data, language, model_name="saarika:v2.5"):
     }
     
     try:
-        # Make request to Sarvam API
+        # Make request to Saaras API
         response = requests.post(
-            SAARIKA_API_URL,
+            SAARAS_API_URL,
             files=files,
             data=data,
             headers=headers,
